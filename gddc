@@ -1,17 +1,13 @@
-#!name= 高德打车签到
-#!desc= 高德打车自动签到（支持 Cookie 抓取 + 定时任务）
-#!author= wf021325
-#!category= 签到
-#!icon= https://raw.githubusercontent.com/Orz-3/mini/master/Color/高德地图.png
+#!name= 📅 个人模块：高德打车签到
+#!desc= 包含自动抓取 Cookie 和每日定时签到（标准多任务版，防折叠）
+#!category= Custom
 
 [Script]
-# ==================== Cookie 抓取 ====================
-# 等号左边必须用纯英文/下划线组合，且不能有空格
+# 1. 抓取 Cookie 脚本
 amap_dache_cookie = type=http-response,pattern=^https?:\/\/(m5(|-zb)|dache)\.amap\.com\/(ws\/yuece\/(act|openapi\/activity\/current)\/query|common\/(alipaymini|wxmini)\?_ENCRYPT=),requires-body=1,max-size=0,script-path=https://fastly.jsdelivr.net/gh/wf021325/qx@master/task/ampDache.js,timeout=60,script-update-interval=86400
 
-# ==================== 定时签到 ====================
-# 彻底拿掉 cronexp 的双引号
-amap_dache_cron = type=cron,cronexp=15 10 * * *,script-path=https://fastly.jsdelivr.net/gh/wf021325/qx@master/task/ampDache.js,timeout=60,wake-system=true,script-update-interval=86400
+# 2. 定时自动签到（把 cronexp 的空格之间多加一层格式化，并移除了可能冲突的参数，逼迫 Surge 识别为双任务）
+amap_dache_cron = type=cron,cronexp="15 10 * * *",script-path=https://fastly.jsdelivr.net/gh/wf021325/qx@master/task/ampDache.js,timeout=60,script-update-interval=86400
 
 [MITM]
 hostname = %APPEND% *.amap.com
