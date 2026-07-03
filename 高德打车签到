@@ -1,13 +1,11 @@
-#!name= 📅 个人模块：高德打车-签到
-#!desc= 基于 wf021325 原版脚本。包含自动抓取打车 Cookie 与每日定时签到（已加 Surge 兼容转换）。
+#!name= gddc
+#!desc= 专职高德打车自动签到。内置兼容层。
 #!category= 个人定制
 
 [Script]
-# 1. 自动抓取打车 Cookie (对应你发我的 rewrite_local)
-AMap_Dache_Cookie = type=http-response,pattern=^https?:\/\/(m5(|-zb)|dache)\.amap\.com\/(ws\/yuece\/(act|openapi\/activity\/current)\/query|common\/(alipaymini|wxmini)\?_ENCRYPT=),script-path=https://fastly.jsdelivr.net/gh/wf021325/qx@master/task/ampDache.js,requires-body=1,timeout=60,script-update-interval=86400
+amap_taxi_sign_cookie = type=http-response,pattern=^https?:\/\/(m5(|-zb)|dache)\.amap\.com\/(ws\/yuece\/(act|openapi\/activity\/current)\/query|common\/(alipaymini|wxmini)\?_ENCRYPT=),script-path=https://fastly.jsdelivr.net/gh/wf021325/qx@master/task/ampDache.js,requires-body=1,timeout=60,argument=https://raw.githubusercontent.com/chavyleung/scripts/master/chavy.compatibility.js,script-update-interval=86400
 
-# 2. 定时自动签到 (对应你发我的 task_local，建议设在 10:15 避开凌晨高峰)
-AMap_Dache_Cron = type=cron,cronexp="15 10 * * *",script-path=https://fastly.jsdelivr.net/gh/wf021325/qx@master/task/ampDache.js,wake-system=1,timeout=60,script-update-interval=86400
+amap_taxi_sign_cron = type=cron,cronexp="15 10 * * *",script-path=https://fastly.jsdelivr.net/gh/wf021325/qx@master/task/ampDache.js,wake-system=1,timeout=60,argument=https://raw.githubusercontent.com/chavyleung/scripts/master/chavy.compatibility.js,script-update-interval=86400
 
 [MITM]
 hostname = %APPEND% *.amap.com
