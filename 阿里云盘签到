@@ -1,0 +1,10 @@
+#!name= 📅 个人模块：阿里云盘签到
+#!desc= 阿里云盘自动签到与 Cookie 抓取
+#!category= 个人定制
+
+[Script]
+AliPan_Cookie = type=http-request,pattern=^https:\/\/(auth|aliyundrive)\.alipan\.com\/v2\/account\/token,script-path=https://gist.githubusercontent.com/Sliverkiss/33800a98dcd029ba09f8b6fc6f0f5162/raw/aliyun.js,requires-body=1
+AliPan_Cron = type=cron,cronexp="0 7,11,17 * * *",script-path=https://gist.githubusercontent.com/Sliverkiss/33800a98dcd029ba09f8b6fc6f0f5162/raw/aliyun.js,wake-system=1
+
+[MITM]
+hostname = %APPEND% auth.alipan.com, auth.aliyundrive.com
