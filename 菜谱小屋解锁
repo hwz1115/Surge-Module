@@ -1,0 +1,9 @@
+#!name= 🔓 个人模块：菜谱小屋解锁
+#!desc= 香哈菜谱、烘焙小屋等 App 内购功能解锁
+#!category= 个人定制
+
+[Script]
+XiangHa_Unlock = type=http-response,pattern=^https?:\/\/api.*\.xiangha\.com\/.+\/([Uu]ser\/(getUserData|info)|pay\/home|dish|home\/getUser|school),script-path=https://raw.githubusercontent.com/chxm1023/Rewrite/main/caipu.js,requires-body=1
+
+[MITM]
+hostname = %APPEND% *.xiangha.com
