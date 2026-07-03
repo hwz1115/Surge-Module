@@ -1,10 +1,13 @@
-#!name= 📅 个人模块：喜马拉雅签到
-#!desc= 喜马拉雅自动签到与 Cookie 抓取
+#!name= 📅 个人模块：喜马拉雅完美签到
+#!desc= 喜马拉雅自动签到与 Cookie 抓取（重写与签到分离独立版，修复超时问题）
 #!category= 个人定制
 
 [Script]
-Xmly_Cookie = type=http-request,pattern=^https?:\/\/xmc\.ximalaya\.com\/xmlymain-login-web\/login\/,script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js,requires-body=0
-Xmly_Cron = type=cron,cronexp="35 11 * * *",script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js,wake-system=1
+# 1. 喜马拉雅：获取 Cookie (开启 Surge 后，打开喜马拉雅 App，点击“我的”即可触发)
+Xmly_Cookie = type=http-request,pattern=^https?:\/\/.*\.ximalaya\.com\/.*(hybrid|account\/thirdparty),script-path=https://raw.githubusercontent.com/chavyleung/scripts/master/ximalaya/ximalaya.cookie.js,requires-body=1,timeout=60
+
+# 2. 喜马拉雅：定时自动签到 (每天 11:35 自动运行，宽限 60 秒超时)
+Xmly_Cron = type=cron,cronexp="35 11 * * *",script-path=https://raw.githubusercontent.com/chavyleung/scripts/master/ximalaya/ximalaya.js,wake-system=1,timeout=60
 
 [MITM]
-hostname = %APPEND% xmc.ximalaya.com
+hostname = %APPEND% *.ximalaya.com
