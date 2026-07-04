@@ -1,0 +1,17 @@
+#!name= 🔑 全局 Cookie 捕获中心 (用完即关)
+#!desc= ⚠️ 核心工具模块。默认必须保持关闭！只有当某个 App 提示 Cookie 失效时，才临时开启，抓取成功后立即关闭。
+
+[Script]
+# --- 1. 喜马拉雅 ---
+喜马拉雅Cookie = type=http-request, pattern=^https?:\/\/xmc\.ximalaya\.com\/xmlymain-login-web\/login\/, script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js, requires-body=true
+
+# --- 2. 百度贴吧 (示例) ---
+贴吧Cookie = type=http-request, pattern=^https?:\/\/tieba\.baidu\.com\/c\/s\/login, script-path=https://raw.githubusercontent.com/NobyDa/Script/master/TieBa-DailyBonus/TieBa_GetCookie.js
+
+# --- 3. 网易云音乐 (示例) ---
+网易云Cookie = type=http-request, pattern=^https?:\/\/music\.163\.com\/api\/w\/nuser\/account\/get, script-path=https://raw.githubusercontent.com/chavy/scripts/master/neteasemusic/neteasemusic.cookie.js
+
+
+[MITM]
+# ⚠️ 注意：每次增加新 App，这里的域名必须用英文逗号隔开，追加在后面
+hostname = %APPEND% xmc.ximalaya.com, tieba.baidu.com, music.163.com
