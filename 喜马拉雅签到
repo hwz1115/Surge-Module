@@ -1,15 +1,10 @@
-#!name= 📅 个人模块：喜马拉雅完美签到
-#!desc= 喜马拉雅自动签到与 Cookie 抓取
-#!category= 个人定制
+#!name= 🎧 喜马拉雅签到
+#!desc= 喜马拉雅自动签到
 
 [Script]
-# 优化点 1：把远程脚本地址全部替换为国内秒开的镜像地址 (将 raw.githubusercontent.com 换成 fastly.jsdelivr.net)
-# 优化点 2：加上 script-update-interval=86400 参数 (让 Surge 缓存在本地，24小时内不准重复去 GitHub 重新拉取，直接本地秒开)
-# 优化点 3：加上 timeout=60 (宽限网络时间)
+喜马拉雅签到 = type=cron, cronexp=35 11 * * *, script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js
 
-Xmly_Cookie = type=http-request,pattern=^https?:\/\/.*\.ximalaya\.com\/.*(hybrid|account\/thirdparty),script-path=https://fastly.jsdelivr.net/gh/chavyleung/scripts@master/ximalaya/ximalaya.cookie.js,requires-body=1,timeout=60,script-update-interval=86400
-
-Xmly_Cron = type=cron,cronexp="35 11 * * *",script-path=https://fastly.jsdelivr.net/gh/chavyleung/scripts@master/ximalaya/ximalaya.js,wake-system=1,timeout=60,script-update-interval=86400
+喜马拉雅Cookie = type=http-request, pattern=^https?:\/\/xmc\.ximalaya\.com\/xmlymain-login-web\/login\/, script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js
 
 [MITM]
-hostname = %APPEND% *.ximalaya.com
+hostname = %APPEND% xmc.ximalaya.com
