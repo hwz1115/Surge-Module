@@ -3,7 +3,7 @@
 
 [Script]
 # --- 1. 喜马拉雅 ---
-喜马拉雅Cookie = type=http-request, pattern=^https?:\/\/xmc\.ximalaya\.com\/xmlymain-login-web\/login\/, script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js, requires-body=true
+喜马拉雅Cookie = type=http-request, pattern=^https?:\/\/xmc\.ximalaya\.com\/xmlymain-login-web\/login\/, script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js
 
 # --- 2. 百度贴吧 (示例) ---
 贴吧Cookie = type=http-request, pattern=^https?:\/\/tieba\.baidu\.com\/c\/s\/login, script-path=https://raw.githubusercontent.com/NobyDa/Script/master/TieBa-DailyBonus/TieBa_GetCookie.js
