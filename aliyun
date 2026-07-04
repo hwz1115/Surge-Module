@@ -1,15 +1,10 @@
-#!name=阿里云盘签到
-#!desc=阿里云盘每日签到（基于 Sliverkiss + aDriveCheckIn）| 定时 16:45 执行
-#!icon=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/AliYunDrive.png
-#!author=改自原 QX 配置
+#!name= 📦 阿里云盘签到
+#!desc= 阿里云盘自动签到
 
 [Script]
-# ==================== 定时签到任务 ====================
-阿里云签到 = type=cron, cronexp="45 16 * * *", wake-system=1, timeout=60, script-path=https://gist.githubusercontent.com/Sliverkiss/33800a98dcd029ba09f8b6fc6f0f5162/raw/aliyun.js
+阿里云获取token = type=http-request, pattern=^https:\/\/(auth|aliyundrive)\.alipan\.com\/v2\/account\/token, script-path=https://raw.githubusercontent.com/zqzess/rule_for_quantumultX/master/js/Mine/aDriveCheckIn/aDriveCheckIn.js, requires-body=true
 
-# ==================== Cookie/Token 获取（重要！） ====================
-# 安装模块后第一次使用时需要手动获取 token
-阿里云盘获取Token = type=http-request, pattern=^https:\/\/(auth|aliyundrive)\.alipan\.com\/v2\/account\/token, requires-body=1, max-size=16384, script-path=https://raw.githubusercontent.com/zqzess/rule_for_quantumultX/master/js/Mine/aDriveCheckIn/aDriveCheckIn.js
+阿里云签到 = type=cron, cronexp=45 16 * * *, script-path=https://gist.githubusercontent.com/Sliverkiss/33800a98dcd029ba09f8b6fc6f0f5162/raw/aliyun.js
 
 [MITM]
-hostname = %APPEND% auth.aliyundrive.com, aliyundrive.com, alipan.com
+hostname = %APPEND% auth.alipan.com, aliyundrive.com
