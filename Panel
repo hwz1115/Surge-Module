@@ -1,0 +1,44 @@
+#!name=Panel
+#!desc=自用Panel收集
+
+[Panel]
+# 网络信息
+{{{PANEL_NAME}}} = script-name=网络信息面板,update-interval={{{UPDATE-INTERVAL}}}
+
+# IP-Pure
+IP-Pure = script-name=IP-Pure, title=IP 纯净度, content=刷新中…, style=info, update-interval=300
+
+# 查询网络接口的网速和流量
+网络接口信息面板 = script-name=网络接口信息面板,update-interval={{{UPDATE-INTERVAL}}}
+
+# 流媒体解锁检测
+stream-all = script-name=stream-all, title="流媒体解锁检测", content="请刷新面板", update-interval={{{UPDATE_INTERVAL}}}
+
+
+[Rule]
+# 确保检测请求走选定的代理策略
+DOMAIN-SUFFIX,ippure.com,{{{Proxy}}}
+
+
+[MITM]
+hostname = %APPEND% net-lsp-x.com
+
+
+[Script]
+# 网络信息 - Request
+网络信息请求 = type=http-request,pattern=^https?:\/\/net-lsp-x\.com,script-path=https://raw.githubusercontent.com/xream/scripts/main/surge/modules/network-info/net-lsp-x.js,timeout=120
+
+# 网络信息 - Event
+{{{EVENT_SCRIPT_NAME}}} = type=event,event-name=network-changed,timeout=120,script-path=https://raw.githubusercontent.com/xream/scripts/main/surge/modules/network-info/net-lsp-x.js,argument="TYPE=EVENT&icon={{{ICON}}}&icon-color={{{ICON-COLOR}}}&LAN={{{LAN}}}&SSID={{{SSID}}}&IPv6={{{IPv6}}}&MASK={{{MASK}}}&DOMESTIC_IPv4={{{DOMESTIC_IPv4}}}&DOMESTIC_IPv6={{{DOMESTIC_IPv6}}}&LANDING_IPv4={{{LANDING_IPv4}}}&LANDING_IPv6={{{LANDING_IPv6}}}&PRIVACY={{{PRIVACY}}}&FLAG={{{FLAG}}}&ENTRANCE_DELAY={{{ENTRANCE_DELAY}}}&TIMEOUT={{{TIMEOUT}}}&EVENT_DELAY={{{EVENT_DELAY}}}&RETRIES={{{RETRIES}}}&RETRY_DELAY={{{RETRY_DELAY}}}&ASN={{{ASN}}}&ORG={{{ORG}}}&DOMESTIC_IPv4_KEY={{{DOMESTIC_IPv4_KEY}}}&LANDING_IPv4_KEY={{{LANDING_IPv4_KEY}}}"
+
+# 网络信息 - Panel
+网络信息面板 = type=generic,timeout=120,script-path=https://raw.githubusercontent.com/xream/scripts/main/surge/modules/network-info/net-lsp-x.js,argument="icon={{{ICON}}}&icon-color={{{ICON-COLOR}}}&LAN={{{LAN}}}&SSID={{{SSID}}}&IPv6={{{IPv6}}}&MASK={{{MASK}}}&DOMESTIC_IPv4={{{DOMESTIC_IPv4}}}&DOMESTIC_IPv6={{{DOMESTIC_IPv6}}}&LANDING_IPv4={{{LANDING_IPv4}}}&LANDING_IPv6={{{LANDING_IPv6}}}&PRIVACY={{{PRIVACY}}}&FLAG={{{FLAG}}}&ENTRANCE_DELAY={{{ENTRANCE_DELAY}}}&TIMEOUT={{{TIMEOUT}}}&EVENT_DELAY={{{EVENT_DELAY}}}&RETRIES={{{RETRIES}}}&RETRY_DELAY={{{RETRY_DELAY}}}&ASN={{{ASN}}}&ORG={{{ORG}}}&DOMESTIC_IPv4_KEY={{{DOMESTIC_IPv4_KEY}}}&LANDING_IPv4_KEY={{{LANDING_IPv4_KEY}}}"
+
+# IP-Pure
+IP-Pure = type=generic, timeout=10, argument={{{MarkIP}}}, script-path=https://raw.githubusercontent.com/Keywos/rule/main/Script/Panel/IPPure.js
+
+# 查询网络接口的网速和流量
+网络接口信息面板 = type=generic,timeout=120,script-path=https://raw.githubusercontent.com/xream/scripts/main/surge/modules/interface-info/interface-info.js,argument="icon=wifi.router&icon-color=#6699FF&STYLE=ncompact"
+
+# 流媒体解锁检测
+stream-all = type=generic, timeout=15, script-path=https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Module/Panel/Stream-All/Moore/Stream-All.js
