@@ -4,7 +4,4 @@
 [Script]
 喜马拉雅签到 = type=cron, cronexp=35 11 * * *, script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js
 
-喜马拉雅Cookie = type=http-request, pattern=^https?:\/\/xmc\.ximalaya\.com\/xmlymain-login-web\/login\/, script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js
 
-[MITM]
-hostname = %APPEND% xmc.ximalaya.com
