@@ -1,0 +1,13 @@
+#!name= 📦 阿里云盘签到
+#!desc= 阿里云盘自动签到
+#!category= 个人定制
+
+[script]
+# Cookie 抓取 (使用 NobyDa 的脚本)
+http-request ^https:\/\/(auth|aliyundrive)\.alipan\.com\/v2\/account\/token script-path=https://raw.githubusercontent.com/NobyDa/Script/master/ALY-Drive/ALY-Drive.cookie.js, requires-body=true
+
+# 定时签到
+cron "30 8 * * *" script-path=https://raw.githubusercontent.com/NobyDa/Script/master/ALY-Drive/ALY-Drive.js
+
+[mitm]
+hostname = auth.alipan.com, aliyundrive.com
