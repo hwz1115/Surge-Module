@@ -1,15 +1,16 @@
-#!name= 高德打车签到
-#!desc= 高德打车签到模块。支持地图APP、微信与支付宝小程序自动抓取 Cookie 及每日定时签到。
-#!author= wf021325
-#!category= 签到
-#!icon= https://raw.githubusercontent.com/Orz-3/mini/master/Color/高德地图.png
+#!name= 📍 高德地图签到
+#!desc= 高德地图打车签到与抢券
+#!category= 个人定制
 
 [Script]
-# 1. 自动抓取多端 Cookie (APP、微信、支付宝)
-amap_dache_cookie = type=http-response,pattern=^https?:\/\/(m5(|-zb)|dache)\.amap\.com\/(ws\/yuece\/(act|openapi\/activity\/current)\/query|common\/(alipaymini|wxmini)\?_ENCRYPT=),requires-body=1,max-size=0,script-path=https://fastly.jsdelivr.net/gh/wf021325/qx@master/task/ampDache.js,timeout=60,script-update-interval=86400
+# Cookie 抓取
+高德地图Cookie = type=http-request, pattern=^https:\/\/(m5(|-zb)|dache)\.amap\.com\/(ws\/yuece\/(act|openapi\/activity\/current)\/query|common\/(alipaymini|wxmini)\?_ENCRYPT=), script-path=https://raw.githubusercontent.com/wf021325/qx/master/task/ampDache.js
 
-# 2. 每日自动定时签到 (建议设在 10:15)
-amap_dache_cron = type=cron,cronexp=15 10 * * *,script-path=https://fastly.jsdelivr.net/gh/wf021325/qx@master/task/ampDache.js,timeout=60,wake-system=true,script-update-interval=86400
+# 定时签到
+高德地图签到 = type=cron, cronexp="34 13 * * *", script-path=https://raw.githubusercontent.com/wf021325/qx/master/task/ampDache.js
+
+# 定时抢券
+高德地图抢券 = type=cron, cronexp="36 16 * * *", script-path=https://raw.githubusercontent.com/wf021325/qx/master/task/ampDacheCoupon.js
 
 [MITM]
-hostname = %APPEND% *.amap.com
+hostname = %APPEND% m5.amap.com, m5-zb.amap.com, dache.amap.com
