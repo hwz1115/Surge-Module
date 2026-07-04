@@ -1,19 +1,11 @@
-#!name= 📅 顺丰速运签到
-#!desc= 顺丰速运自动签到（含通知）
+#!name= 📅 顺丰速运签到（修复版）
+#!desc= 顺丰速运自动签到
 #!category= 个人定制
 
 [Script]
-SF_Express_Cookie = type=http-request,pattern=^https:\/\/ccsp-egmas\.sf-express\.com\/cx-app-member\/member\/app\/user\/universalSign,script-path=https://raw.githubusercontent.com/chavyleung/scripts/master/sfexpress/sfexpress.cookie.js,requires-body=1,timeout=10
+SF_Express_Cookie = type=http-request,pattern=^https:\/\/ccsp-egmas\.sf-express\.com\/cx-app-member\/member\/app\/user\/universalSign,script-path=https://raw.githubusercontent.com/NobyDa/Script/master/SF-Express/SF-Express.cookie.js,requires-body=1
 
-# 改为早上执行，提高成功率
-SF_Express_Cron = type=cron,cronexp="0 9 * * *",script-path=https://raw.githubusercontent.com/chavyleung/scripts/master/sfexpress/sfexpress.js,wake-system=1,timeout=30
-
-# 添加签到结果通知（需要修改脚本）
-SF_Express_Notify = type=cron,cronexp="5 9 * * *",script-path=https://raw.githubusercontent.com/chavyleung/scripts/master/sfexpress/sfexpress.notify.js
+SF_Express_Cron = type=cron,cronexp="30 8 * * *",script-path=https://raw.githubusercontent.com/NobyDa/Script/master/SF-Express/SF-Express.js,wake-system=1
 
 [MITM]
 hostname = ccsp-egmas.sf-express.com
-
-[General]
-# 建议开启，防止脚本执行超时
-script-timeout = 30
