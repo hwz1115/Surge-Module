@@ -8,7 +8,10 @@
 # --- 2. WPS签到 ---
 WPS Cookie = type=http-request, pattern=^https:\/\/personal-act\.wps\.cn\/activity-rubik\/activity\/page_info, script-path=https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/app/wps/wps.cookie.js, requires-body=false
 
+# --- 3. 阿里云 ---
+阿里云获取token = type=http-request, pattern=^https:\/\/(auth|aliyundrive)\.alipan\.com\/v2\/account\/token, script-path=https://gist.githubusercontent.com/Sliverkiss/33800a98dcd029ba09f8b6fc6f0f5162/raw/aliyun.js, requires-body=true
+
 
 [MITM]
 # ⚠️ 注意：每次增加新 App，这里的域名必须用英文逗号隔开，追加在后面
-hostname = %APPEND% xmc.ximalaya.com, tieba.baidu.com, music.163.com, personal-act.wps.cn
+hostname = %APPEND% xmc.ximalaya.com, tieba.baidu.com, music.163.com, personal-act.wps.cn, auth.alipan.com, auth.aliyundrive.com
