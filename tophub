@@ -1,0 +1,26 @@
+#!name= 📰 今日热榜VIP解锁
+#!author= XiaoMao
+#!update= 2024-05-28
+#!desc= 解锁今日热榜VIP、广告移除、订阅摘要展示等
+
+[Script]
+# 账户同步
+今日热榜-账户同步 = type=http-request, pattern=^https:\/\/api2\.tophub\.app\/account\/sync$, script-path=https://raw.githubusercontent.com/xiaomaoJT/QxScript/main/rewrite/boxJS/source/th.js, requires-body=true
+
+# 我的订阅
+今日热榜-我的订阅 = type=http-request, pattern=^https:\/\/api2\.tophub\.app\/my\/items$, script-path=https://raw.githubusercontent.com/xiaomaoJT/QxScript/main/rewrite/boxJS/source/th.js, requires-body=true
+
+# 我的提醒
+今日热榜-我的提醒 = type=http-request, pattern=^https:\/\/api2\.tophub\.app\/my\/alerts\/items$, script-path=https://raw.githubusercontent.com/xiaomaoJT/QxScript/main/rewrite/boxJS/source/th.js, requires-body=true
+
+# 频道内容
+今日热榜-频道内容 = type=http-request, pattern=^https:\/\/api2\.tophub\.app\/my\/channels\/.+\/items$, script-path=https://raw.githubusercontent.com/xiaomaoJT/QxScript/main/rewrite/boxJS/source/th.js, requires-body=true
+
+# 探索页面
+今日热榜-探索 = type=http-request, pattern=^https:\/\/api2\.tophub\.app\/explore$, script-path=https://raw.githubusercontent.com/xiaomaoJT/QxScript/main/rewrite/boxJS/source/th.js, requires-body=true
+
+# 移除淘宝推荐广告（直接拒绝请求）
+今日热榜-移除广告 = type=http-request, pattern=^https:\/\/api2\.tophub\.app\/remai\/recommend\/taobao$, reject
+
+[MITM]
+hostname = %APPEND% api2.tophub.app
