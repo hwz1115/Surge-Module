@@ -1,0 +1,13 @@
+#!name=飞牛NAS论坛自动签到
+#!desc=自动获取飞牛论坛登录Cookie并执行每日定时签到（绕过验证码）。
+#!author=kggzs & Gemini
+
+[MITM]
+hostname = %APPEND% club.fnnas.com
+
+[Script]
+# 1. 拦截请求获取 Cookie 和 Formhash (当访问和刷新论坛页面时触发)
+飞牛论坛获取凭证 = type=http-response,pattern=^https:\/\/club\.fnnas\.com\/.*,requires-body=true,max-size=524288,script-path=https://raw.githubusercontent.com/你的GitHub用户名/你的仓库名/main/fnnas_get_cookie.js
+
+# 2. 定时自动签到 (每天早上 09:00 自动触发)
+飞牛论坛自动签到 = type=cron,cronexp="0 9 * * *",wake-system=1,timeout=30,script-path=https://raw.githubusercontent.com/你的GitHub用户名/你的仓库名/main/fnnas_checkin.js
