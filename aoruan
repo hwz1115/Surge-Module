@@ -1,9 +1,0 @@
-#!name=傲软投屏 解锁VIP
-#!desc=傲软投屏解锁VIP脚本，仅供学习与交流，请勿转载与贩卖！
-#!category=解密
-
-[MITM]
-hostname = %APPEND% awvp.aoscdn.com
-
-[Script]
-傲软投屏_VIP = type=http-response,pattern=^https:\/\/awvp\.aoscdn\.com\/base\/vip\/client\/authorizations,requires-body=1,max-size=0,script-path=https://raw.githubusercontent.com/89996462/Quantumult-X/main/ycdz/artp.js
