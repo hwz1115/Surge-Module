@@ -1,6 +1,6 @@
 #!name= 途虎养车
-#!desc= 每日签到自动获取积分(每日 +5 积分,可抵现)
+#!desc= 每日签到自动获取积分（+5积分 可抵现）
+#!category= 签到
 
 [Script]
-
-途虎养车签到 = type=cron,cronexp=17 10 * * *,timeout=60,script-path=https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/miniprogram/tuhu/tuhu.js,img-url=https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/tuhu.png
+途虎养车签到 = type=cron, cronexp=17 10 * * *, script-path=https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/miniprogram/tuhu/tuhu.js, wake-system=true, timeout=60, img-url=https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/tuhu.png
