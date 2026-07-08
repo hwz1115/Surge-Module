@@ -2,6 +2,6 @@
 #!desc= 喜马拉雅自动签到
 
 [Script]
-喜马拉雅签到 = type=cron, cronexp=35 11 * * *, script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.jsjs, wake-system=true, timeout=60
+喜马拉雅签到 = type=cron, cronexp=35 11 * * *, script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js, wake-system=true, timeout=60
 
 
