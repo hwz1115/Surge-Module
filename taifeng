@@ -1,6 +1,0 @@
-#!name= 个人模块：台风实时监测
-#!desc= 每日早间自动推送台风动态气象广播
-#!category= 个人定制
-
-[Script]
-台风监测 = type=cron, cronexp=0 9,11,15,19 * * *, script-path=https://raw.githubusercontent.com/xiaomaoJT/QxScript/main/rewrite/boxJS/XiaoMaoTyhoon.js, wake-system=true
