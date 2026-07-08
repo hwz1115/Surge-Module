@@ -69,26 +69,37 @@ async function main() {
     const detailPromises = activeList.map(el => getDetail(el.tfid));
     const detailsResult = await Promise.all(detailPromises);
 
-    // 3. 组装通知内容：核心参数在前（折叠时先看到），详情紧随其后（展开/长按后看到）
+    // 3. 组装通知内容：核心参数 → 空行 → 详情参数 → 空行 → 更新时间，层次分明不拥挤
     activeList.forEach((el, index) => {
       const d = detailsResult[index] || {};
-      const prefix = objLength < 2 ? "" : `[第 ${index + 1} 条] `;
+      const prefix = objLength < 2 ? "" : `【第 ${index + 1} 条】\n`;
       const code = el.tfid.substring(0, 4) + "年第" + el.tfid.substring(4, 6) + "号";
 
-      // 核心参数：折叠状态下优先展示
-      messageText +=
-        prefix + `${code} ${el.strong}${el.name}(${el.enname})\n` +
-        `💨 ${el.power}级 ${el.speed}米/秒 | 🫧 ${el.pressure}百帕\n` +
-        `🎐 东经${el.lng}° 北纬${el.lat}°\n`;
+      // 风圈半径合并成一行，只保留实际存在的档位，避免逐行堆砌
+      const radiusParts = [];
+      if (d.radius7) radiusParts.push(`7级${d.radius7}`);
+      if (d.radius10) radiusParts.push(`10级${d.radius10}`);
+      if (d.radius12) radiusParts.push(`12级${d.radius12}`);
+      const radiusLine = radiusParts.length ? `🌀 风圈：${radiusParts.join(" · ")}\n` : "";
 
-      // 详情参数：紧跟其后，展开通知后可见
-      messageText += `🪁 移速移向：${el.movespeed}km/h、${el.movedirection}\n`;
-      if (d.radius7) messageText += `🕖 七级风圈：${d.radius7}\n`;
-      if (d.radius10) messageText += `🕙 十级风圈：${d.radius10}\n`;
-      if (d.radius12) messageText += `🕛 十二级风圈：${d.radius12}\n`;
-      if (d.ckposition) messageText += `🗼 参考位置：${d.ckposition}\n`;
-      if (d.jl) messageText += `🎢 未来趋势：${d.jl}\n`;
-      messageText += `更新：${el.timeformate}\n\n`;
+      messageText += prefix;
+
+      // 核心参数
+      messageText +=
+        `${code} ${el.strong}${el.name}(${el.enname})\n` +
+        `💨 ${el.power}级 ${el.speed}米/秒　🫧 ${el.pressure}百帕\n` +
+        `📍 东经${el.lng}° 北纬${el.lat}°\n`;
+
+      messageText += "\n"; // 核心与详情之间留白
+
+      // 详情参数
+      messageText += `🪁 ${el.movespeed}km/h ${el.movedirection}\n`;
+      if (radiusLine) messageText += radiusLine;
+      if (d.ckposition) messageText += `🗼 ${d.ckposition}\n`;
+      if (d.jl) messageText += `🎢 ${d.jl}\n`;
+
+      messageText += "\n"; // 详情与更新时间之间留白
+      messageText += `⏱ 更新：${el.timeformate}\n\n\n`;
     });
 
     // 4. 推送通知：不设置 url，避免点击后跳转到脚本本身；靠系统长按/展开显示完整内容
