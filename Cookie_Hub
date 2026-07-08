@@ -18,4 +18,4 @@ WPS Cookie = type=http-request, pattern=^https:\/\/personal-act\.wps\.cn\/activi
 
 [MITM]
 # ⚠️ 注意：每次增加新 App，这里的域名必须用英文逗号隔开，追加在后面
-hostname = %APPEND% xmc.ximalaya.com, tieba.baidu.com, music.163.com, personal-act.wps.cn, auth.alipan.com, auth.aliyundrive.com, api.tuhu.cn
+hostname = %APPEND% xmc.ximalaya.com, adse.ximalaya.com, adse.wsa.ximalaya.com, tieba.baidu.com, music.163.com, personal-act.wps.cn, auth.alipan.com, auth.aliyundrive.com, api.tuhu.cn
