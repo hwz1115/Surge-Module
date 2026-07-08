@@ -3,7 +3,7 @@
 
 [Script]
 # --- 1. 喜马拉雅 ---
-喜马拉雅 Cookie = type=http-request, pattern=^https?:\/\/.*ximalaya\.com\/, script-path=https://raw.githubusercontent.com/ClydeTime/Surge/main/Script/Task/xmly.js
+喜马拉雅 Cookie = type=http-request, pattern=^https?:\/\/xmc\.ximalaya\.com\/xmlymain-login-web\/login\/ url script-request-header https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js
 
 # --- 2. WPS签到 ---
 WPS Cookie = type=http-request, pattern=^https:\/\/personal-act\.wps\.cn\/activity-rubik\/activity\/page_info, script-path=https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/app/wps/wps.cookie.js, requires-body=false
