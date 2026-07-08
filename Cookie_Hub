@@ -3,13 +3,13 @@
 
 [Script]
 # --- 1. 喜马拉雅 ---
-喜马拉雅 Cookie = type=http-request, pattern=^https?:\/\/xmc\.ximalaya\.com\/xmlymain-login-web\/login\/, script-path=https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js
+喜马拉雅 Cookie = type=http-request, pattern=^https?:\/\/.*ximalaya\.com\/(xmlymain-login-web\/login\/|web-activity\/signIn), script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/xmly_sign.js
 
 # --- 2. WPS签到 ---
 WPS Cookie = type=http-request, pattern=^https:\/\/personal-act\.wps\.cn\/activity-rubik\/activity\/page_info, script-path=https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/app/wps/wps.cookie.js, requires-body=false
 
 # --- 3. 阿里云 ---
-阿里云获取token = type=http-request, pattern=^https:\/\/(auth|aliyundrive)\.alipan\.com\/v2\/account\/token, script-path=https://gist.githubusercontent.com/Sliverkiss/33800a98dcd029ba09f8b6fc6f0f5162/raw/aliyun.js, requires-body=true
+阿里云 token = type=http-request, pattern=^https:\/\/(auth|aliyundrive)\.alipan\.com\/v2\/account\/token, script-path=https://gist.githubusercontent.com/Sliverkiss/33800a98dcd029ba09f8b6fc6f0f5162/raw/aliyun.js, requires-body=true
 
 # --- 4. 途虎养车 ---
 途虎养车 Cookie = type=http-request,pattern=https:\/\/api\.tuhu\.cn\/User\/(GetMemberSignInInfoAsync|GetRightsList),requires-body=false,max-size=0,script-path=https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/miniprogram/tuhu/tuhu.js,img-url
