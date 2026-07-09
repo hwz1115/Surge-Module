@@ -4,10 +4,10 @@
 
 [Script]
 # 1. BoxJs 数据自动备份 (每天 10:00 自动运行)
-BoxJs_Backup = type=cron,cronexp="0 10 * * *",script-path=https://raw.githubusercontent.com/dompling/Script/master/gist/backup.js,wake-system=1
+BoxJs_Backup = type=cron,cronexp="0 10 * * *",script-path=https://raw.githubusercontent.com/dompling/Script/master/gist/backup.js, wake-system=true, timeout=60
 
 # 2. BoxJs 缓存历史纪录 (每天 10:05 自动运行)
-BoxJs_Commit = type=cron,cronexp="5 10 * * *",script-path=https://raw.githubusercontent.com/dompling/Script/master/gist/commit.js,wake-system=1
+BoxJs_Commit = type=cron,cronexp="5 10 * * *",script-path=https://raw.githubusercontent.com/dompling/Script/master/gist/commit.js, wake-system=true, timeout=60
 
 # 3. BoxJs 首页手动恢复面板 (点击 Surge 首页的卡片即可手动触发恢复)
 BoxJs_Manual_Restore = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/dompling/Script/master/gist/restore.js,script-update-interval=0
