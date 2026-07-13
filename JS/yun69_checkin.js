@@ -75,8 +75,16 @@ function httpRequest(opts) {
 function extractCookies(resp) {
   let raw = resp.headers['Set-Cookie'] || resp.headers['set-cookie'];
   if (!raw) return '';
-  if (!Array.isArray(raw)) raw = [raw];
-  return raw.map((c) => c.split(';')[0]).join('; ');
+  let parts;
+  if (Array.isArray(raw)) {
+    parts = raw;
+  } else {
+    // 有些环境会把多条 Set-Cookie 合并成一整个逗号分隔的字符串返回,
+    // 直接按逗号切会把 Expires=Thu, 01-Jan... 里的逗号也切碎,
+    // 所以只在"逗号后紧跟 名字=" 的位置切分,识别下一条 cookie 的开始。
+    parts = raw.split(/,(?=\s*[a-zA-Z0-9_]+=)/);
+  }
+  return parts.map((c) => c.split(';')[0].trim()).join('; ');
 }
 
 async function checkinOne(account) {
@@ -99,6 +107,7 @@ async function checkinOne(account) {
       body: JSON.stringify({ email: user, passwd: pass, remember_me: 'on', code: '' }),
     });
     console.log(`🔸 [${user}] 登录响应 status=${resp.status || resp['status-line']}, body=${(body || '').slice(0, 200)}`);
+    console.log(`🔸 [${user}] 原始 Set-Cookie: ${JSON.stringify(resp.headers['Set-Cookie'] || resp.headers['set-cookie'])}`);
     loginResp = resp;
     const json = JSON.parse(body);
     if (json.ret !== 1) {
@@ -111,7 +120,7 @@ async function checkinOne(account) {
   }
 
   const cookie = extractCookies(loginResp);
-  console.log(`🔸 [${user}] 提取到 Cookie: ${cookie ? cookie.slice(0, 60) + '...' : '(空)'}`);
+  console.log(`🔸 [${user}] 提取到 Cookie(完整): ${cookie || '(空)'}`);
   await sleep(1000);
 
   console.log(`🔸 [${user}] 开始签到请求...`);
