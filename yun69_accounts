@@ -1,0 +1,5 @@
+#!name= 69云签到
+#!desc= 69云签到
+
+[Script]
+69云签到 = type=cron,cronexp="0 12 * * *",wake-system=1,timeout=60,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/yun69_checkin.js
