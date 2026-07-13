@@ -1,16 +1,31 @@
 /*
  * 69云自动签到 (Surge JS 版)
  * 移植自: https://github.com/Elykia093/69Yun_Auto_Checkin (Python + GitHub Actions)
- * Version: 2026-07-13 v1.0 (首次转换)
+ * Version: v1.2 (2026-07-13)
  *
- * 变更说明:
- *   - 原脚本用 requests + BeautifulSoup 登录/签到/解析用户信息, GitHub Actions 定时触发, Secrets 存账号密码。
- *   - Surge 版改用 $httpClient 做登录/签到请求, Cookie 从 Set-Cookie 手动拼装 (Surge 无 requests 的 cookiejar)。
- *   - 用户信息页解析: 原来用 BeautifulSoup 找 <script> 标签再正则; Surge 版直接对整页 HTML 做正则匹配
- *     window.ChatraIntegration 所在的 <script>...</script> 片段, 再从中提取 Class_Expire / Unused_Traffic。
- *   - 通知: 默认用 Surge $notification 本地推送; 若在 BoxJS 配置了 yun69_bot_token + yun69_chat_id,
- *     则额外发送 Telegram (格式与原脚本一致)。
- *   - 多账号: 原来用 USER1/PASS1, USER2/PASS2... 环境变量; Surge 版改成 BoxJS 存一个 JSON 数组,更好维护。
+ * 变更历史:
+ *   v1.0 (2026-07-13) 首次转换
+ *     - 原脚本用 requests + BeautifulSoup 登录/签到/解析用户信息, GitHub Actions 定时触发, Secrets 存账号密码。
+ *     - Surge 版改用 $httpClient 做登录/签到请求, Cookie 从 Set-Cookie 手动拼装 (Surge 无 requests 的 cookiejar)。
+ *     - 用户信息页解析: 原来用 BeautifulSoup 找 <script> 标签再正则; Surge 版直接对整页 HTML 做正则匹配
+ *       window.ChatraIntegration 所在的 <script>...</script> 片段, 再从中提取 Class_Expire / Unused_Traffic。
+ *     - 通知: 默认用 Surge $notification 本地推送; 若在 BoxJS 配置了 yun69_bot_token + yun69_chat_id,
+ *       则额外发送 Telegram (格式与原脚本一致)。
+ *     - 多账号: 原来用 USER1/PASS1, USER2/PASS2... 环境变量; Surge 版改成 BoxJS 存一个 JSON 数组,更好维护。
+ *
+ *   v1.1 (2026-07-13) 调试排查
+ *     - 登录/签到/用户信息抓取每一步都加上 console.log, 之前失败时错误信息只塞进返回字符串,
+ *       控制台看不到具体卡在哪一步。
+ *     - 主流程开始处打印读取到的账号数, 用于确认 BoxJS 数据是否正常读取到。
+ *
+ *   v1.2 (2026-07-13) 修复 Cookie 丢失问题
+ *     - 根本原因: 登录成功后签到请求返回的是登录页 HTML 而非 JSON, 定位到是 extractCookies() 的问题——
+ *       网站把多条 Set-Cookie 合并成一整个逗号分隔字符串返回(而不是数组), 原来的实现按分号切,
+ *       只切出了第一条 cookie(uid=...), 后面维持登录态必需的 cookie 全部丢失。
+ *     - 改为识别"逗号后紧跟 名字=" 的位置才切分, 避免把 Expires=Thu, 01-Jan... 里的逗号切碎,
+ *       从而正确拼出完整的多条 Cookie。
+ *     - 登录响应新增打印原始 Set-Cookie 内容和提取后的完整 Cookie(此前完整 Cookie 只打印前 60 字符),
+ *       方便确认修复是否生效。
  *
  * BoxJS 配置项:
  *   yun69_accounts  : JSON 数组字符串, 例如:
