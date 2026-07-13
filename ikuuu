@@ -1,0 +1,10 @@
+#!name= ikuuu机场签到
+#!desc= ikuuu机场签到领流量
+#!category= 个人定制
+
+[Script]
+ikuuu-checkin = type=cron,cronexp="30 12 * * *",wake-system=1,timeout=60,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/Ikuuu_checkin.js
+
+
+[MITM]
+hostname = %APPEND% ikuuu.win
