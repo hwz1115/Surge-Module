@@ -36,6 +36,7 @@ const botToken = $persistentStore.read('yun69_bot_token') || '';
 const chatId = $persistentStore.read('yun69_chat_id') || '';
 
 ;(async () => {
+  console.log(`🔸 读取到账号数: ${accounts.length}`);
   if (!accounts.length) {
     console.log('❌ 未配置账号 (yun69_accounts)');
     $notification.post('69云签到', '', '❌ 未配置账号,请检查 BoxJS 中 yun69_accounts');
@@ -82,6 +83,7 @@ async function checkinOne(account) {
   const { user, pass } = account;
   const info = `🔹 地址: ${domain}\n🔑 账号: ${user}\n🔒 密码: ${pass}\n`;
 
+  console.log(`🔸 [${user}] 开始登录请求...`);
   let loginResp;
   try {
     const { resp, body } = await httpRequest({
@@ -96,18 +98,23 @@ async function checkinOne(account) {
       },
       body: JSON.stringify({ email: user, passwd: pass, remember_me: 'on', code: '' }),
     });
+    console.log(`🔸 [${user}] 登录响应 status=${resp.status || resp['status-line']}, body=${(body || '').slice(0, 200)}`);
     loginResp = resp;
     const json = JSON.parse(body);
     if (json.ret !== 1) {
+      console.log(`❌ [${user}] 登录失败: ${json.msg || '未知错误'}`);
       return `${info}❌ 登录失败: ${json.msg || '未知错误'}\n`;
     }
   } catch (e) {
+    console.log(`❌ [${user}] 登录请求异常: ${e}`);
     return `${info}❌ 登录请求异常: ${e}\n`;
   }
 
   const cookie = extractCookies(loginResp);
+  console.log(`🔸 [${user}] 提取到 Cookie: ${cookie ? cookie.slice(0, 60) + '...' : '(空)'}`);
   await sleep(1000);
 
+  console.log(`🔸 [${user}] 开始签到请求...`);
   let checkinResult = {};
   try {
     const { body } = await httpRequest({
@@ -121,9 +128,10 @@ async function checkinOne(account) {
         Referer: `${domain}/user/panel`,
       },
     });
+    console.log(`🔸 [${user}] 签到响应 body=${(body || '').slice(0, 200)}`);
     checkinResult = JSON.parse(body || '{}');
   } catch (e) {
-    console.log('⚠️ 签到请求异常: ' + e);
+    console.log(`⚠️ [${user}] 签到请求异常: ${e}`);
   }
   const resultEmoji = checkinResult.ret === 1 ? '✅' : '⚠️';
   const resultMsg = checkinResult.msg || '签到结果未知';
@@ -134,15 +142,20 @@ async function checkinOne(account) {
 }
 
 async function fetchUserInfo(cookie) {
+  console.log('🔸 开始抓取用户信息...');
   try {
     const { body } = await httpRequest({
       url: `${domain}/user`,
       method: 'get',
       headers: { Cookie: cookie, 'User-Agent': UA },
     });
+    console.log(`🔸 用户信息页返回长度: ${(body || '').length}`);
 
     const chatraMatch = body.match(/window\.ChatraIntegration[\s\S]*?<\/script>/);
-    if (!chatraMatch) return '⚠️ 未识别到用户信息\n';
+    if (!chatraMatch) {
+      console.log('⚠️ 未在页面中匹配到 window.ChatraIntegration');
+      return '⚠️ 未识别到用户信息\n';
+    }
     const chatraScript = chatraMatch[0];
 
     const expireMatch = chatraScript.match(/'Class_Expire':\s*'(.*?)'/);
