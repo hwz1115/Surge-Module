@@ -1,7 +1,7 @@
 /*
  * 69云自动签到 (Surge JS 版)
  * 移植自: https://github.com/Elykia093/69Yun_Auto_Checkin (Python + GitHub Actions)
- * Version: v1.2 (2026-07-13)
+ * Version: v1.3 (2026-07-13)
  *
  * 变更历史:
  *   v1.0 (2026-07-13) 首次转换
@@ -26,6 +26,14 @@
  *       从而正确拼出完整的多条 Cookie。
  *     - 登录响应新增打印原始 Set-Cookie 内容和提取后的完整 Cookie(此前完整 Cookie 只打印前 60 字符),
  *       方便确认修复是否生效。
+ *     - 实测确认: 签到接口正常返回 JSON, 签到成功。
+ *
+ *   v1.3 (2026-07-13) 登录请求加自动重试
+ *     - 背景: 短时间内连续手动测试触发网站风控, 登录请求报 "Master connection closed: EOF"
+ *       (连接层面被对方主动断开, 不是账号密码错误)。正式 cron 一天一次不会触发这种频率型风控,
+ *       但为了应对偶发的网络抖动/瞬时限流, 给登录请求加了一次自动重试(间隔 3 秒)。
+ *     - 重试仅针对请求本身抛出异常(连接失败/超时等), 不针对"账号密码错误"这类业务层面的失败
+ *       (业务失败重试没有意义, 只会加重风控)。
  *
  * BoxJS 配置项:
  *   yun69_accounts  : JSON 数组字符串, 例如:
@@ -108,30 +116,41 @@ async function checkinOne(account) {
 
   console.log(`🔸 [${user}] 开始登录请求...`);
   let loginResp;
-  try {
-    const { resp, body } = await httpRequest({
-      url: `${domain}/auth/login`,
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': UA,
-        Accept: 'application/json',
-        Origin: domain,
-        Referer: `${domain}/auth/login`,
-      },
-      body: JSON.stringify({ email: user, passwd: pass, remember_me: 'on', code: '' }),
-    });
-    console.log(`🔸 [${user}] 登录响应 status=${resp.status || resp['status-line']}, body=${(body || '').slice(0, 200)}`);
-    console.log(`🔸 [${user}] 原始 Set-Cookie: ${JSON.stringify(resp.headers['Set-Cookie'] || resp.headers['set-cookie'])}`);
-    loginResp = resp;
-    const json = JSON.parse(body);
-    if (json.ret !== 1) {
-      console.log(`❌ [${user}] 登录失败: ${json.msg || '未知错误'}`);
-      return `${info}❌ 登录失败: ${json.msg || '未知错误'}\n`;
+  let loginAttempt = 0;
+  while (true) {
+    loginAttempt++;
+    try {
+      const { resp, body } = await httpRequest({
+        url: `${domain}/auth/login`,
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': UA,
+          Accept: 'application/json',
+          Origin: domain,
+          Referer: `${domain}/auth/login`,
+        },
+        body: JSON.stringify({ email: user, passwd: pass, remember_me: 'on', code: '' }),
+      });
+      console.log(`🔸 [${user}] 登录响应 status=${resp.status || resp['status-line']}, body=${(body || '').slice(0, 200)}`);
+      console.log(`🔸 [${user}] 原始 Set-Cookie: ${JSON.stringify(resp.headers['Set-Cookie'] || resp.headers['set-cookie'])}`);
+      loginResp = resp;
+      const json = JSON.parse(body);
+      if (json.ret !== 1) {
+        console.log(`❌ [${user}] 登录失败: ${json.msg || '未知错误'}`);
+        return `${info}❌ 登录失败: ${json.msg || '未知错误'}\n`;
+      }
+      break; // 请求本身成功(不管业务是否成功), 跳出重试循环
+    } catch (e) {
+      // 请求本身抛异常(连接失败/EOF/超时等), 大概率是网络抖动或瞬时限流, 重试一次
+      if (loginAttempt < 2) {
+        console.log(`⚠️ [${user}] 登录请求异常(第 ${loginAttempt} 次): ${e}, 3 秒后重试`);
+        await sleep(3000);
+        continue;
+      }
+      console.log(`❌ [${user}] 登录请求异常(已重试): ${e}`);
+      return `${info}❌ 登录请求异常: ${e}\n`;
     }
-  } catch (e) {
-    console.log(`❌ [${user}] 登录请求异常: ${e}`);
-    return `${info}❌ 登录请求异常: ${e}\n`;
   }
 
   const cookie = extractCookies(loginResp);
