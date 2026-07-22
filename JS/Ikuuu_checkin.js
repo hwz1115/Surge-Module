@@ -1,7 +1,10 @@
 /*
  * iKuuu机场每日签到 - Surge版 (多账号 + 失效提醒)
- * 版本: 20260713-1
- * 更新说明: 首个版本，实现多账号Cookie签到 + 失效检测通知
+ * 版本: 20260722-1
+ * 更新说明: 加固失效检测——原来只认"跳转/auth/login"或"包含邮箱+密码"两种登录页特征，
+ *           现在新增判断：只要返回内容不是合法JSON、且内容看起来像一整个网页
+ *           (以<!DOCTYPE开头 或 包含<html标签)，就统一判定为失败，
+ *           避免网站改版/出现验证页时，脚本误把网页内容当成签到成功结果显示。
  *
  * 使用方法:
  * 1. BoxJS变量 ikuuu_cookies，格式：一行一个账号，name&cookie
@@ -90,12 +93,20 @@ function checkinOne(cookie) {
             resolve(JSON.stringify(json));
           }
         } catch (e) {
-          // 非JSON，多半是被重定向到了登录页HTML
-          if (body && (body.includes("邮箱") && body.includes("密码"))) {
-            reject("Cookie已失效，请重新登录网站更新Cookie");
-          } else {
-            resolve((body || `状态码${status}`).slice(0, 80));
+          // 非JSON，先看是不是老式登录页特征
+          if (body && body.includes("邮箱") && body.includes("密码")) {
+            return reject("Cookie已失效，请重新登录网站更新Cookie");
           }
+
+          // 再看是不是"看起来像一整个网页"——这种情况大概率不是签到接口该返回的内容，
+          // 不管是Cookie失效、网站改版、还是遇到验证/拦截页，统一判定为失败，
+          // 避免把网页原文当成签到结果显示出来
+          const looksLikeHtmlPage = body && (/^\s*<!DOCTYPE/i.test(body) || /<html[\s>]/i.test(body));
+          if (looksLikeHtmlPage) {
+            return reject("Cookie可能已失效，或网站返回了非预期页面(非签到接口应有的JSON)，请检查Cookie或稍后重试");
+          }
+
+          resolve((body || `状态码${status}`).slice(0, 80));
         }
       }
     );
