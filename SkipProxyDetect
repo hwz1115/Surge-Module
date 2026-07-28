@@ -7,7 +7,7 @@ DOMAIN,msmp.abchina.com.cn,REJECT
 
 [General]
 # 避免 APP 检测代理
-skip-proxy = %APPEND% www.baidu.com,yunbusiness.ccb.com,wxh.wo.cn,gate.lagou.com,www.abchina.com.cn,www.shanbay.com,login-service.mobile-bank.psbc.com,mobile-bank.psbc.com,id6.me
+skip-proxy = %APPEND% www.baidu.com,*.ccb.com,wxh.wo.cn,gate.lagou.com,www.abchina.com.cn,www.shanbay.com,login-service.mobile-bank.psbc.com,mobile-bank.psbc.com,id6.me
 
 # 强制真实 IP，用于运营商登录/游戏更新等
 always-real-ip = %APPEND% easy-login.10099.com.cn,*-update.xoyocdn.com,id6.me,open.e.189.cn
