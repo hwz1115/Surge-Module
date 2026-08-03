@@ -51,10 +51,11 @@ function operator(proxies) {
     });
   });
 
-  // 先过滤掉到期、套餐、流量、公告等非节点信息
-  const infoKeywords = /到期|剩余|套餐|流量|重置|官网|电报|频道|通知|公告|过期|有效期|expire|traffic|remain|reset|official|telegram|channel|notice|announcement|package|plan|quota|unused|used|total/i;
+  // 先过滤掉到期、套餐、流量、公告、建议等非节点信息
+  const infoKeywords = /到期|剩余|套餐|流量|重置|官网|电报|频道|通知|公告|过期|有效期|距离下次|建议|卡顿|专线|expire|traffic|remain|reset|official|telegram|channel|notice|announcement|package|plan|quota|unused|used|total/i;
   proxies = proxies.filter((proxy) => {
     const name = proxy.name || '';
+    if (name.length < 2) return false;
     return !infoKeywords.test(name);
   });
 
