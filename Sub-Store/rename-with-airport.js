@@ -18,6 +18,7 @@
  * 5. 机场名：自动读取节点所属订阅名（优先用订阅的显示名称），放在最后用 | 分隔
  * 6. 认不出地区的节点：保持原名不动，不会被删除
  * 7. 匹配前自动清理常见协议前缀（HY2/Hysteria2/tuic/VLESS/VMess等），提高识别率
+ * 8. 自动去除到期、套餐、流量、重置、官网、公告等非节点信息
  *
  * 针对截图中类似节点的处理示例：
  *   "hysteria2 sg 新加坡07 | MITCE" → 🇸🇬 新加坡01 | MITCE
@@ -48,6 +49,13 @@ function operator(proxies) {
     list.forEach((val, idx) => {
       if (!(val in regionMap)) regionMap[val] = ZH[idx];
     });
+  });
+
+  // 先过滤掉到期、套餐、流量、公告等非节点信息
+  const infoKeywords = /到期|剩余|套餐|流量|重置|官网|电报|频道|通知|公告|过期|有效期|expire|traffic|remain|reset|official|telegram|channel|notice|announcement|package|plan|quota|unused|used|total/i;
+  proxies = proxies.filter((proxy) => {
+    const name = proxy.name || '';
+    return !infoKeywords.test(name);
   });
 
   const counters = {}; // 记录每个"地区+机场"组合当前编到几号
