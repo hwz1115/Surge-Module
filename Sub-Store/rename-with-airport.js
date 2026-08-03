@@ -7,12 +7,11 @@
  *   例：🇭🇰 香港01 3x | hkvps
  *   例：🇭🇰 香港01 | hkvps        （没有倍率信息或就是1倍，不显示倍率）
  *   例：🇹🇼 台湾01 | hkvps
- *   例：🇹🇼 TW01 | hkvps           （原名精确写"TW"缩写时，保留TW文字 + 台湾旗）
+ *   例：🇨🇳 TW01 | hkvps           （原名精确写"TW"缩写时，保留TW文字 + 🇨🇳）
  *
  * 规则说明：
  * 1. 地区识别：中文名/国旗emoji/英文全称/英文缩写，四选一命中即可（已支持大小写不敏感）
- * 2. 台湾特例：原名含 TW / TW01 / TW-1 等缩写（且不含"台湾"/"Taiwan"/🇹🇼）→ 保留"TW"文字 + 🇹🇼国旗
- *    原名写"台湾"或已带🇹🇼 → 正常使用🇹🇼 台湾xx
+ * 2. 台湾统一使用 🇨🇳（兼容性更好）：纯 TW 缩写保留"TW"文字 + 🇨🇳；写"台湾"则为 🇨🇳 台湾xx
  * 3. 倍率：自动识别"3倍"/"×3"/"3x"等写法，统一转成"3x"；1倍或没有倍率信息则不显示
  * 4. 编号：按"地区+机场"分组各自独立编号（不同机场的香港节点都能从01开始）
  * 5. 机场名：自动读取节点所属订阅名（优先用订阅的显示名称），放在最后用 | 分隔
@@ -23,8 +22,8 @@
  * 针对截图中类似节点的处理示例：
  *   "hysteria2 sg 新加坡07 | MITCE" → 🇸🇬 新加坡01 | MITCE
  *   "SG2-HY2"                     → 🇸🇬 新加坡02 | MITCE
- *   "tuic TW01 | MITCE"           → 🇹🇼 TW01 | MITCE
- *   "TW-1"                        → 🇹🇼 TW02 | MITCE
+ *   "tuic TW01 | MITCE"           → 🇨🇳 TW01 | MITCE
+ *   "TW-1"                        → 🇨🇳 TW02 | MITCE
  */
 
 // prettier-ignore
@@ -82,7 +81,7 @@ function operator(proxies) {
 
     if (isTWAbbr) {
       regionZh = 'TW';
-      flag = '🇹🇼';  // 纯 TW 缩写也显示台湾旗
+      flag = '🇨🇳';  // 纯 TW 缩写使用 🇨🇳
     } else {
       // 大小写不敏感匹配
       const matchedKey = Object.keys(regionMap).find((key) =>
@@ -94,7 +93,10 @@ function operator(proxies) {
       }
       regionZh = regionMap[matchedKey];
       flag = FG[ZH.indexOf(regionZh)] || '';
-      // 正常使用 🇹🇼（不再强制 🇨🇳）
+      // 台湾统一使用 🇨🇳（兼容性更好）
+      if (regionZh === '台湾') {
+        flag = '🇨🇳';
+      }
     }
 
     // 2. 提取倍率，非1倍才保留
