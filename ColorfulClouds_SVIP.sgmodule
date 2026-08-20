@@ -1,0 +1,10 @@
+#!name = 彩云天气 SVIP 解锁
+#!desc = 拦截并修改 biz.caiyunapp.com 的会员权益/用户接口返回,解锁 SVIP 权限
+#!author = chiupam
+#!homepage = https://github.com/chiupam/surge
+
+[Script]
+彩云天气SVIP = type=http-response,pattern=^https?:\/\/biz\.caiyunapp\.com\/(membership_rights|v2\/user),script-path=https://raw.githubusercontent.com/chiupam/surge/main/scripts/javascript/unblock/ColorfulClouds_SVIP.js,requires-body=true,timeout=60,tag=彩云天气SVIP
+
+[MITM]
+hostname = %APPEND% biz.caiyunapp.com
