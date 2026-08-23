@@ -3,15 +3,8 @@
 #!priority=1000
 
 [Script]
-
-# ✅ 抓包（已放宽匹配，确保一定命中）
-WeTalk-Capture = type=http-request,pattern=^https:\/\/api\.wetalkapp\.com\/app\/.*,requires-body=0,script-path=https://raw.githubusercontent.com/Nixi-N/Tool/main/JS/Wetalk.js
-
-# ✅ 每分钟执行（用于测试是否跑起来）
-WeTalk-Run-Minute = type=cron,cronexp="*/1 * * * *",wake-system=1,timeout=120,script-path=https://raw.githubusercontent.com/Nixi-N/Tool/main/JS/Wetalk.js
-
-# ✅ 每天两次（保留但注释）
-# WeTalk-Run = type=cron,cronexp="30 8,20 * * *",wake-system=1,timeout=120,script-path=https://raw.githubusercontent.com/Nixi-N/Tool/main/JS/Wetalk.js
+# WeTalk获取签到参数 = type=http-request,pattern=^https:\/\/api\.wetalkapp\.com\/app\/queryBalanceAndBonus,script-path=WeTalk.js,timeout=60
+WeTalk签到 = type=cron,cronexp=35 */8 * * *,script-path=WeTalk.js,timeout=300,script-update-interval=0
 
 
 [MITM]
