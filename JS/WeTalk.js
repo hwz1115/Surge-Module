@@ -1,8 +1,8 @@
-//2026/06/29
+//2026/06/29-1038
 /*
 @Name：WeTalk 自动化签到+视频奖励 (Surge版)
 @Author：TG@ZenMoFiShi
-@Update：修复任务自拦截问题
+@Update：修复自拦截报错 + 双重编码问题
 */
 
 const scriptName = 'WeTalk';
@@ -104,6 +104,11 @@ function normalizeHeaderNameMap(headers) {
   return out;
 }
 
+function safeDecode(v) {
+  if (v == null) return '';
+  try { return decodeURIComponent(String(v)); } catch (e) { return String(v); }
+}
+
 function parseRawQuery(url) {
   const query = (url.split('?')[1] || '').split('#')[0];
   const rawMap = {};
@@ -113,15 +118,10 @@ function parseRawQuery(url) {
     if (idx < 0) return;
     const k = pair.slice(0, idx);
     const v = pair.slice(idx + 1);
-    // 解码后再存，避免后续双重编码
+    // 解码后再存，防止后续双重编码
     rawMap[k] = safeDecode(v);
   });
   return rawMap;
-}
-
-function safeDecode(v) {
-  if (v == null) return '';
-  try { return decodeURIComponent(String(v)); } catch (e) { return String(v); }
 }
 
 function emailKeyOf(paramsRaw) {
@@ -250,7 +250,7 @@ function buildHeaders(capture, ua) {
   });
   headers['User-Agent'] = ua;
   headers['Connection'] = 'close';
-  headers['X-Script-Request'] = '1';   // 标记脚本自己发出的请求，防止被抓包规则二次拦截
+  headers['X-Script-Request'] = '1';   // 标记脚本自己发出的请求
   return headers;
 }
 
@@ -356,7 +356,7 @@ function runAccount(acc, index, total) {
 if (typeof $request !== 'undefined' && $request) {
   // ========== 抓包模式 ==========
   
-  // 跳过脚本自己发出的请求，防止任务运行时被二次拦截
+  // 1. 跳过脚本自己发出的请求
   const reqHeaders = $request.headers || {};
   if (reqHeaders['X-Script-Request'] || reqHeaders['x-script-request']) {
     $done({});
@@ -364,40 +364,42 @@ if (typeof $request !== 'undefined' && $request) {
   }
 
   const paramsRaw = parseRawQuery($request.url);
+  const email = emailKeyOf(paramsRaw);
+
+  // 2. 没有 email 参数时静默跳过（不再弹错误通知）
+  if (!email) {
+    $done({});
+    return;
+  }
+
   const headersMap = normalizeHeaderNameMap($request.headers || {});
   let baseUA = '';
   Object.keys(headersMap).forEach(k => { if (k.toLowerCase() === 'user-agent') baseUA = headersMap[k]; });
 
-  const email = emailKeyOf(paramsRaw);
-  if (!email) {
-    notify('⚠️ 抓取失败', '请求里未取到 email 参数，无法识别账号。请确认已登录后再触发抓包。');
-    $done({});
-  } else {
-    const store = loadStore();
-    const accId = email;
-    const now = Date.now();
-    const existed = !!store.accounts[accId];
-    const uaSeed = existed ? store.accounts[accId].uaSeed : store.order.length;
-    const alias = existed ? (store.accounts[accId].alias || email) : email;
+  const store = loadStore();
+  const accId = email;
+  const now = Date.now();
+  const existed = !!store.accounts[accId];
+  const uaSeed = existed ? store.accounts[accId].uaSeed : store.order.length;
+  const alias = existed ? (store.accounts[accId].alias || email) : email;
 
-    store.accounts[accId] = {
-      id: accId,
-      email: email,
-      alias,
-      uaSeed,
-      baseUA,
-      capture: { url: $request.url, paramsRaw, headers: headersMap },
-      createdAt: existed ? store.accounts[accId].createdAt : now,
-      updatedAt: now
-    };
-    if (!existed) store.order.push(accId);
-    saveStore(store);
+  store.accounts[accId] = {
+    id: accId,
+    email: email,
+    alias,
+    uaSeed,
+    baseUA,
+    capture: { url: $request.url, paramsRaw, headers: headersMap },
+    createdAt: existed ? store.accounts[accId].createdAt : now,
+    updatedAt: now
+  };
+  if (!existed) store.order.push(accId);
+  saveStore(store);
 
-    const total = store.order.length;
-    notify(existed ? '🔄 账号参数已更新' : '✅ 新账号已入库', `${email}\n当前账号总数：${total}`);
-    console.log(`【${scriptName}】${existed ? 'update' : 'add'} account ${email}\n${JSON.stringify(store.accounts[accId], null, 2)}`);
-    $done({});
-  }
+  const total = store.order.length;
+  notify(existed ? '🔄 账号参数已更新' : '✅ 新账号已入库', `${email}\n当前账号总数：${total}`);
+  console.log(`【${scriptName}】${existed ? 'update' : 'add'} account ${email}\n${JSON.stringify(store.accounts[accId], null, 2)}`);
+  $done({});
 } else {
   // ========== 定时任务模式 ==========
   const store = loadStore();
