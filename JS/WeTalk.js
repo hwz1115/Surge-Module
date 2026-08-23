@@ -113,7 +113,8 @@ function parseRawQuery(url) {
     if (idx < 0) return;
     const k = pair.slice(0, idx);
     const v = pair.slice(idx + 1);
-    rawMap[k] = v;
+    // 解码后再存，避免后续双重编码
+    rawMap[k] = safeDecode(v);
   });
   return rawMap;
 }
