@@ -1,11 +1,13 @@
-#!name=WeTalk 自动签到
-#!desc=抓包+签到（分钟执行+定时保留）
-#!priority=1000
+#!name=WeTalk 签到+视频奖励
+#!desc=WeTalk 自动化签到 + 视频奖励，支持多账号（基于 ZenMoFiShi 脚本）
+#!author=TG@ZenMoFiShi / Surge适配
 
 [Script]
-WeTalk获取签到参数 = type=http-request,pattern=^https:\/\/api\.wetalkapp\.com\/app\/queryBalanceAndBonus,script-path=WeTalk.js,timeout=60
-WeTalk签到 = type=cron,cronexp=35 */8 * * *,script-path=WeTalk.js,timeout=300,script-update-interval=0
+# 抓包：获取账号参数
+WeTalk-Capture = type=http-request, pattern=^https:\/\/api\.wetalkapp\.com\/app\/queryBalanceAndBonus, script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/WeTalk.js, requires-body=false, max-size=0, timeout=30
 
+# 定时任务：每天 8:20 和 20:20 执行
+WeTalk-Task = type=cron, cronexp=20 8,20 * * *, script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/WeTalk.js, timeout=120, wake-system=1
 
 [MITM]
 hostname = %APPEND% api.wetalkapp.com
