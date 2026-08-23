@@ -1,13 +1,18 @@
-#!name=WeTalk 自动化签到
-#!desc=WeTalk 自动签到与视频任务脚本（获取 Token + 定时签到）
-#!category=脚本
+#!name=WeTalk 自动签到
+#!desc=抓包+签到（分钟执行+定时保留）
+#!priority=1000
 
 [Script]
-# 1. 获取账号凭证/Cookie (打开 WeTalk App 刷新或进签到页面触发)
-WeTalk 获取凭证 = type=http-request,pattern=^https?:\/\/api\.wetalkapp\.com\/app\/(queryBalanceAndBonus|checkin),script-path=https://raw.githubusercontent.com/ZenmoFeiShi/Qx/main/WeTalk.js,requires-body=true,timeout=30,script-update-interval=0
 
-# 2. 定时自动签到任务 (每天 08:30 自动运行)
-WeTalk 定时签到 = type=cron,cronexp="55 9 * * *",script-path=https://raw.githubusercontent.com/ZenmoFeiShi/Qx/main/WeTalk.js,timeout=300,wake-system=true,script-update-interval=0
+# ✅ 抓包（已放宽匹配，确保一定命中）
+WeTalk-Capture = type=http-request,pattern=^https:\/\/api\.wetalkapp\.com\/app\/.*,requires-body=0,script-path=https://raw.githubusercontent.com/Nixi-N/Tool/main/JS/Wetalk.js
+
+# ✅ 每分钟执行（用于测试是否跑起来）
+WeTalk-Run-Minute = type=cron,cronexp="*/1 * * * *",wake-system=1,timeout=120,script-path=https://raw.githubusercontent.com/Nixi-N/Tool/main/JS/Wetalk.js
+
+# ✅ 每天两次（保留但注释）
+# WeTalk-Run = type=cron,cronexp="30 8,20 * * *",wake-system=1,timeout=120,script-path=https://raw.githubusercontent.com/Nixi-N/Tool/main/JS/Wetalk.js
+
 
 [MITM]
 hostname = %APPEND% api.wetalkapp.com
