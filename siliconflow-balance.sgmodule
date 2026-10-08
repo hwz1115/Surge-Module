@@ -1,5 +1,5 @@
-# 版本：v1.5（2026-10-08）定时表达式加引号（含逗号，不加会被拆开导致不触发）；每天 12、18、23 点查询，每次都通知；脚本为 sf_balance.js v1.4
 #!name=硅基流动余额监控
+#!version=v1.6（2026-10-08）修复名称不显示：版本号改成 #! 格式；每天 12、18、23 点查询，每次都通知；脚本为 sf_balance.js v1.4
 #!desc=打开控制台时自动记住登录态；每天 12、18、23 点查询余额并通知，低于设定金额时标题提示偏低
 #!author=Muse
 #!arguments=threshold:10
@@ -11,3 +11,4 @@
 
 [MITM]
 hostname = %APPEND% *.siliconflow.cn, *.siliconflow.com
+
