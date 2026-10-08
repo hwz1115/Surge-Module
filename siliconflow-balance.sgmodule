@@ -1,15 +1,13 @@
-# 版本：v1.1（2026-10-08）整理说明文字；脚本为 sf_balance.js v1.4
+# 版本：v1.5（2026-10-08）定时表达式加引号（含逗号，不加会被拆开导致不触发）；每天 12、18、23 点查询，每次都通知；脚本为 sf_balance.js v1.4
 #!name=硅基流动余额监控
-#!desc=打开控制台时自动记住登录态；每天 12、18、23 点查询，低于设定金额提醒，每天早上发一条日报
+#!desc=打开控制台时自动记住登录态；每天 12、18、23 点查询余额并通知，低于设定金额时标题提示偏低
 #!author=Muse
 #!arguments=threshold:10
-#!arguments-desc=threshold：余额低于多少元时提醒
-
-# 只有这一个脚本文件 sf_balance.js。
+#!arguments-desc=threshold：余额低于多少元时提示偏低
 
 [Script]
 硅基流动_登录态捕获 = type=http-request,pattern=^https:\/\/[^\/]+\.siliconflow\.(cn|com)\/walletd-server\/api\/v1\/subject\/,requires-body=0,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/sf_balance.js,timeout=10
-硅基流动_余额定时查询 = type=cron,cronexp=0 12,18,23 * * *,wake-system=1,timeout=20,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/sf_balance.js,argument=threshold={{{threshold}}}
+硅基流动_余额定时查询 = type=cron,cronexp="0 12,18,23 * * *",wake-system=1,timeout=20,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/sf_balance.js,argument=threshold={{{threshold}}}
 
 [MITM]
 hostname = %APPEND% *.siliconflow.cn, *.siliconflow.com
