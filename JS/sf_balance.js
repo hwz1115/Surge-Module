@@ -1,6 +1,6 @@
 /**
- * 版本：v1.2（2026-10-08）支持 Cookie / Authorization 两种登录方式，日志打印请求头名字
- * 历史：v1.1 合并成单文件；v1.0 拆分版
+ * 版本：v1.3（2026-10-08）余额换算成元（接口返回值要除以 1 万亿），优先取 balance 字段
+ * 历史：v1.2 支持 Cookie / Authorization 两种登录方式；v1.1 合并成单文件；v1.0 拆分版
  *
  * 硅基流动余额监控（单文件版）
  * 一个脚本两种用途，自动判断：
@@ -108,7 +108,8 @@
         for (var k in obj) walk(obj[k], path ? path + '.' + k : k);
       } else if (/balance|remain|credit|余额/i.test(path)) {
         var n = parseFloat(obj);
-        if (!isNaN(n)) found.push({ key: path, value: n });
+        // 接口返回的是放大 1 万亿倍的整数，换算成元；数值本来就小的则不动
+        if (!isNaN(n)) found.push({ key: path, value: Math.abs(n) >= 1e9 ? n / 1e12 : n });
       }
     })(json, '');
 
@@ -118,9 +119,14 @@
       return $done();
     }
 
-    var main = found[0].value;
+    function fmt(v) { return (Math.round(v * 100) / 100).toFixed(2); }
+    var mainItem = found[0];
+    for (var i = 0; i < found.length; i++) {
+      if (/(^|\.)balance$/i.test(found[i].key)) { mainItem = found[i]; break; }
+    }
+    var main = mainItem.value;
     var detail = found.slice(0, 3).map(function (f) {
-      return f.key.split('.').pop() + ': ' + f.value;
+      return f.key.split('.').pop() + ': ' + fmt(f.value);
     }).join('  ');
 
     var now = new Date();
@@ -131,15 +137,15 @@
     // 余额低：最多每 6 小时提醒一次
     if (main < threshold && Date.now() - lastLow > 6 * 3600 * 1000) {
       $persistentStore.write(String(Date.now()), 'sf_last_low');
-      $notification.post('硅基流动 · 余额偏低', '剩余 ' + main + ' 元', detail);
+      $notification.post('硅基流动 · 余额偏低', '剩余 ' + fmt(main) + ' 元', detail);
     }
     // 每天早上 8 点后第一次运行，发一条日报
     else if (now.getHours() >= 8 && lastDaily !== today) {
       $persistentStore.write(today, 'sf_last_daily');
-      $notification.post('硅基流动 · 今日余额', '剩余 ' + main + ' 元', detail);
+      $notification.post('硅基流动 · 今日余额', '剩余 ' + fmt(main) + ' 元', detail);
     }
 
-    console.log('[SF] 余额 ' + main + '（' + detail + '）');
+    console.log('[SF] 余额 ' + fmt(main) + ' 元（' + detail + '）');
     $done();
   });
 })();
