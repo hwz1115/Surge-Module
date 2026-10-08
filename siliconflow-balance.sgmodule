@@ -1,4 +1,4 @@
-# 版本：脚本为 sf_balance.js v1.3
+# 版本：脚本为 sf_balance.js v1.4
 #!name=硅基流动余额监控
 #!desc=打开控制台时自动记住登录态；低于设定金额提醒
 #!author=Muse
