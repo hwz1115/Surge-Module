@@ -29,11 +29,17 @@
     var h = $request.headers || {};
     var cookie = getHeader(h, 'Cookie');
     var sid = getHeader(h, 'x-subject-id');
+    var auth = getHeader(h, 'Authorization');
     var changed = false;
+    console.log('[SF] 本次请求带的头: ' + Object.keys(h).join(', '));
 
     if (cookie && cookie !== $persistentStore.read('sf_cookie')) {
       $persistentStore.write(cookie, 'sf_cookie');
       $persistentStore.write(String(Date.now()), 'sf_cookie_at');
+      changed = true;
+    }
+    if (auth && auth !== $persistentStore.read('sf_auth')) {
+      $persistentStore.write(auth, 'sf_auth');
       changed = true;
     }
     if (sid && sid !== $persistentStore.read('sf_subject_id')) {
@@ -57,18 +63,20 @@
   var threshold = parseFloat(args.threshold || '10'); // 低于多少元提醒
   var cookieSaved = $persistentStore.read('sf_cookie');
   var subjectId = $persistentStore.read('sf_subject_id');
+  var authSaved = $persistentStore.read('sf_auth');
   var url = $persistentStore.read('sf_api_url');
 
-  if (!cookieSaved || !url) {
+  if ((!cookieSaved && !authSaved) || !url) {
     $notification.post('硅基流动', '还没有登录态', '请用开着 Surge 的手机打开并刷新一次控制台页面');
     return $done();
   }
 
   var headers = {
-    'Cookie': cookieSaved,
     'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15',
     'Accept': 'application/json'
   };
+  if (cookieSaved) headers['Cookie'] = cookieSaved;
+  if (authSaved) headers['Authorization'] = authSaved;
   if (subjectId) headers['x-subject-id'] = subjectId;
 
   $httpClient.get({ url: url, headers: headers, timeout: 15 }, function (err, resp, body) {
