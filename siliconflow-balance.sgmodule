@@ -1,8 +1,9 @@
+# 版本：v1.1（2026-10-08）整理说明文字；定时每天 9-21 点每 3 小时一次；脚本为 sf_balance.js v1.3
 #!name=硅基流动余额监控
-#!desc=打开控制台时自动记住登录态，每小时查询余额；低于设定金额提醒，每天早上发一条日报
+#!desc=打开控制台时自动记住登录态；每天 9-21 点每 3 小时查询余额，低于设定金额提醒，每天早上发一条日报
 #!author=Muse
 #!arguments=threshold:10
-#!arguments-desc=threshold：  余额低于多少元时提醒
+#!arguments-desc=threshold：余额低于多少元时提醒
 
 # 只有这一个脚本文件 sf_balance.js。
 
