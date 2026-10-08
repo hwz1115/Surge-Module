@@ -10,7 +10,7 @@
 
 [Script]
 硅基流动_登录态捕获 = type=http-request,pattern=^https:\/\/cloud\.siliconflow\.(cn|com)\/walletd-server\/api\/v1\/subject\/,requires-body=0,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/sf_balance.js,timeout=10
-硅基流动_余额定时查询 = type=cron,cronexp=0 * * * *,wake-system=1,timeout=20,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/sf_balance.js,argument=threshold={{{threshold}}}
+硅基流动_余额定时查询 = type=cron,cronexp=0 9,12,17 * * *,wake-system=1,timeout=20,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/sf_balance.js,argument=threshold={{{threshold}}}
 
 [MITM]
 hostname = %APPEND% cloud.siliconflow.cn, cloud.siliconflow.com
