@@ -2,15 +2,13 @@
 #!desc=打开控制台时自动记住登录态，每小时查询余额；低于设定金额提醒，每天早上发一条日报
 #!author=Muse
 #!arguments=threshold:10
-#!arguments-desc=threshold：余额低于多少元时提醒
+#!arguments-desc=threshold：  余额低于多少元时提醒
 
 # 只有这一个脚本文件 sf_balance.js。
-# 把下面两处 REPLACE_WITH_YOUR_HOST 换成它的 https 地址，
-# 或在 Surge 里手动新建脚本并粘贴 sf_balance.js 的内容。
 
 [Script]
 硅基流动_登录态捕获 = type=http-request,pattern=^https:\/\/[^\/]+\.siliconflow\.(cn|com)\/walletd-server\/api\/v1\/subject\/,requires-body=0,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/sf_balance.js,timeout=10
-硅基流动_余额定时查询 = type=cron,cronexp=* * * * *,wake-system=1,timeout=20,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/sf_balance.js,argument=threshold={{{threshold}}}
+硅基流动_余额定时查询 = type=cron,cronexp=0 9-21/3 * * *,wake-system=1,timeout=20,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/sf_balance.js,argument=threshold={{{threshold}}}
 
 [MITM]
 hostname = %APPEND% *.siliconflow.cn, *.siliconflow.com
