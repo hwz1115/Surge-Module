@@ -10,4 +10,4 @@
 硅基流动_余额定时查询 = type=cron,cronexp="0 9,12,17 * * *",wake-system=1,timeout=20,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/sf_balance_cron.js
 
 [MITM]
-hostname = %APPEND% cloud.siliconflow.com
+hostname = %APPEND% cloud.siliconflow.com, cloud.siliconflow.cn
