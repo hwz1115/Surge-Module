@@ -1,6 +1,6 @@
 /**
- * 版本：v1.4（2026-10-08）每次查询都发通知；余额低于设定值时标题改为"余额偏低"
- * 历史：v1.3 余额换算成元；v1.2 支持 Cookie / Authorization 两种登录方式；v1.1 合并成单文件；v1.0 拆分版
+ * 版本：v1.5（2026-10-08）修复在 Surge 脚本编辑器里手动运行时被误当成"捕获"：改为按请求网址判断
+ * 历史：v1.4 每次查询都发通知；v1.3 余额换算成元；v1.2 支持 Cookie / Authorization 两种登录方式；v1.1 合并成单文件；v1.0 拆分版
  *
  * 硅基流动余额监控（单文件版）
  * 一个脚本两种用途，自动判断：
@@ -8,7 +8,9 @@
  *   2) 被 cron 触发（定时）→ 查询余额并推送
  */
 (function () {
-  var isCapture = typeof $request !== 'undefined';
+  // 只有真的拦截到控制台接口请求时才是"捕获"；编辑器手动运行、定时运行都走"查询"
+  var isCapture = typeof $request !== 'undefined' && $request &&
+    typeof $request.url === 'string' && $request.url.indexOf('walletd-server') !== -1;
 
   // ---------- 通用小工具 ----------
   function getHeader(headers, name) {
