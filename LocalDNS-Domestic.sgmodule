@@ -1,5 +1,5 @@
 #!name=LocalDNS 国内DNS分流 v1.0.1
-#!desc=版本1.0.1（2026-10-17）。国内网站单独走国内DNS，其余走海外DNS不泄露。基于Sukka的Local DNS Mapping，补上domestic.conf里的国内常用域名。装本模块前请先关闭Sukka原模块。
+#!desc=版本1.0.1（2026-10-17）。国内网站单独走国内DNS，其余走海外DNS不泄露。基于Sukka的Local DNS Mapping，补上domestic.conf里的国内常用域名。
 
 [Host]
 # ===== 1. 国内 DoH 服务器自身的地址（固定，防止循环解析）=====
