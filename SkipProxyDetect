@@ -1,13 +1,52 @@
 #!name=Skip Proxy And Real-IP Lists
-#!desc=跳过部分应用的代理检测
+#!desc=跳过部分应用的代理检测，银行直连
+# 版本: v1.2
 
 [Rule]
-# 阻止农业银行特定域名
+# 阻止农业银行特定域名（必须放在农行直连规则前面）
 DOMAIN,msmp.abchina.com.cn,REJECT
+
+# 金融服务直连
+DOMAIN-SUFFIX,95599.cn,DIRECT
+DOMAIN-SUFFIX,abchina.com.cn,DIRECT
+DOMAIN-SUFFIX,bscabank.com,DIRECT
+DOMAIN-SUFFIX,openaboc.com,DIRECT
+DOMAIN-SUFFIX,openaboc.com.cn,DIRECT
+DOMAIN-SUFFIX,icbc.com.cn,DIRECT
+DOMAIN-SUFFIX,icbc.com,DIRECT
+DOMAIN-SUFFIX,cmbchina.com,DIRECT
+DOMAIN-SUFFIX,cmbchina.com.cn,DIRECT
+DOMAIN-SUFFIX,ccb.com,DIRECT
+DOMAIN-SUFFIX,ccb.com.cn,DIRECT
+DOMAIN-SUFFIX,bocomm.com,DIRECT
+DOMAIN-SUFFIX,bankcomm.com,DIRECT
+DOMAIN-SUFFIX,psbc.com,DIRECT
+DOMAIN-SUFFIX,cmbc.com.cn,DIRECT
+DOMAIN-SUFFIX,ceb.com,DIRECT
+DOMAIN-SUFFIX,citic.com,DIRECT
+DOMAIN-SUFFIX,ecitic.com,DIRECT
+DOMAIN-SUFFIX,spdb.com.cn,DIRECT
+DOMAIN-SUFFIX,pingan.com,DIRECT
+DOMAIN-SUFFIX,pingan.com.cn,DIRECT
+
+# IP 规则
+IP-CIDR,180.76.76.200/32,REJECT,no-resolve
 
 [General]
 # 避免 APP 检测代理
-skip-proxy = %APPEND% www.baidu.com,*.ccb.com,wxh.wo.cn,gate.lagou.com,www.abchina.com.cn,www.shanbay.com,login-service.mobile-bank.psbc.com,mobile-bank.psbc.com,id6.me
+skip-proxy = %APPEND% www.baidu.com,*.ccb.com,wxh.wo.cn,gate.lagou.com,www.abchina.com.cn,www.shanbay.com,login-service.mobile-bank.psbc.com,mobile-bank.psbc.com,id6.me,www.163.com
 
 # 强制真实 IP，用于运营商登录/游戏更新等
 always-real-ip = %APPEND% easy-login.10099.com.cn,*-update.xoyocdn.com,id6.me,open.e.189.cn
+
+# www.baidu.com: 网上国网、多看阅读、顺丰金融、广东农信、丰云行、中国银行缤纷生活、通信行程卡app、趣智校园、趣听音乐、光大手机银行、掌上12333、沃视频
+# *.ccb.com: 建行生活
+# wxh.wo.cn: 沃小号
+# gate.lagou.com: 拉勾招聘
+# www.abchina.com.cn: 中国农业银行
+# www.shanbay.com: 扇贝单词消息中心
+# login-service.mobile-bank.psbc.com, mobile-bank.psbc.com: 中国邮政储蓄银行
+# easy-login.10099.com.cn: 中国广电
+# *-update.xoyocdn.com: 剑网三无界
+# id6.me: 中国电信一键登陆
+# www.163.com: 交管12123
