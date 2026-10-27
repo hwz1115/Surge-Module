@@ -1,8 +1,8 @@
-# 版本号: v1.0.0
 #!name=中国移动签到
 #!desc=中国移动 App「签到赢好礼」每日自动签到 + 查积分（先划掉App重开，进签到页点一次签到抓取登录信息）
 #!category=签到
 #!author=MaYIHEI (脚本) / 整理成模块
+# 版本号: v1.0.0
 
 [Script]
 中国移动 Cookie = type=http-request,pattern=^https:\/\/client\.app\.coc\.10086\.cn\/biz-orange\/[LD]N\/uam(onekey|randcode)login\/autoLogin,requires-body=true,max-size=0,script-path=https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/app/cmcc/cmcc.js,img-url=https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/cmcc.png
