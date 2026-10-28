@@ -1,7 +1,7 @@
 #!name=测试模块
-#!desc=仅用于测试脚本导入，不会改变任何网络行为
+#!desc=仅用于测试脚本导入，不会改变任何网络行为 该成2.0
 #!category=测试
-# 版本 v1.0.0
+# 版本 v2.0.0
 
 [Rule]
 DOMAIN,test-module.invalid,REJECT
