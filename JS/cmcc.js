@@ -1,4 +1,4 @@
-// 版本号: v1.1.0 (基于作者 r9; 续登时重新生成 cellNum / sysTime; 记住抓取时的登录接口地址并原样使用, 失败通知里显示该地址)
+// 版本号: v1.2.0 (基于作者 r9; 续登时重新生成 cellNum / sysTime; 记住抓取时的登录接口地址并原样使用, 失败通知里显示该地址; 签到通知里附上服务器原话 result / errmsg, 用来核对是否真的签到)
 /**
  * 中国移动 · 中国移动 APP「签到赢好礼」每日签到
  *
@@ -69,7 +69,7 @@ const $ = new Env("中国移动");
 // 签到合集开启「统一通知」时不单独弹通知,结果由签到汇总统一发送
 $.merge = typeof $argument === "object" && !!$argument && $argument.merge === true;
 if ($.merge) $.msg = (...a) => console.log(a.filter((x) => typeof x === "string" && x).join("\n"));
-const SCRIPT_VERSION = "2026-10-26.r9-local2"; // 改一次 +1,确认拉到最新版
+const SCRIPT_VERSION = "2026-10-26.r9-local3"; // 改一次 +1,确认拉到最新版
 $.log(`[INFO] 脚本版本 ${SCRIPT_VERSION}`);
 
 const K_LOGIN = "cmcc_login";    // 登录信封数组(JSON 数组,每元素一个账号;单一数据源)
@@ -217,12 +217,13 @@ async function sign(cookie, loginJ) {
   const dr = await post({ url: "https://" + H5_HOST + P_DOPRIZE + q, headers: { "User-Agent": H5_UA, "Referer": H5_REFERER, "Content-Type": "application/json" }, body: "" });
   const dout = JSON.parse(peelJson(dr.data) || "{}");
   if (DEBUG) $.log("[DEBUG] doPrize " + JSON.stringify(dout).slice(0, 140));
+  const info = "result=" + dout.result + (dout.errmsg ? " " + dout.errmsg : "") + (dout.resultDesc ? " " + dout.resultDesc : "");
   if (dout.result === 0) {
     const p0 = (dout.prizelist && dout.prizelist[0]) || {};
-    return { ok: true, prize: p0.prizeName || p0.prizeDesc || "" };
+    return { ok: true, prize: p0.prizeName || p0.prizeDesc || "", info };
   }
-  if (dout.result === -114 || /已经?签到|已签到|重复签到/.test(dout.errmsg || "")) return { ok: true, already: true };
-  return { ok: false, msg: dout.errmsg || dout.resultDesc || ("result=" + dout.result) };
+  if (dout.result === -114 || /已经?签到|已签到|重复签到/.test(dout.errmsg || "")) return { ok: true, already: true, info };
+  return { ok: false, msg: dout.errmsg || dout.resultDesc || ("result=" + dout.result), info };
 }
 
 // 单账号一行结果文案
@@ -231,9 +232,9 @@ function lineFor(r) {
   if (r.err) return `${who}: 异常 ${r.err}`;
   let s;
   if (r.sg.skip) s = "签到待配置";
-  else if (r.sg.already) s = "今日已签到";
-  else if (r.sg.ok) s = r.sg.prize ? `签到成功 获得 ${r.sg.prize}` : "签到成功";
-  else s = `签到失败 ${r.sg.msg}`;
+  else if (r.sg.already) s = `今日已签到 [${r.sg.info || ""}]`;
+  else if (r.sg.ok) s = (r.sg.prize ? `签到成功 获得 ${r.sg.prize}` : "签到成功") + ` [${r.sg.info || ""}]`;
+  else s = `签到失败 ${r.sg.msg} [${r.sg.info || ""}]`;
   const pt = (r.pts && !r.pts.err && r.pts.point != null) ? ` · 积分 ${r.pts.point}` : "";
   return `${who}: ${s}${pt}`;
 }
