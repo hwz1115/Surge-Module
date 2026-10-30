@@ -1,0 +1,10 @@
+#!name=江苏签到探测
+#!desc=临时用: 点江苏"签到有礼"时, 用通知显示 wap.js.10086.cn/nact/action.do 的请求和返回结构 (手机号和长令牌会自动遮盖). 查完请关掉
+# 版本号: v1.0.0
+
+[Script]
+nact请求 = type=http-request,pattern=^https:\/\/wap\.js\.10086\.cn\/nact\/action\.do,requires-body=true,max-size=0,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/jsnact_probe.js
+nact返回 = type=http-response,pattern=^https:\/\/wap\.js\.10086\.cn\/nact\/action\.do,requires-body=true,max-size=0,script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/jsnact_probe.js
+
+[MITM]
+hostname = %APPEND% wap.js.10086.cn
