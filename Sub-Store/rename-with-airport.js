@@ -1,13 +1,16 @@
+// 版本：v2.1（在 v2 基础上新增：家宽/住宅节点自动标注 🏠家宽）
 /**
- * 自定义节点重命名脚本（优化版 v2）
+ * 自定义节点重命名脚本（优化版 v2.1）
  * 用法：Sub-Store 脚本操作，直接粘贴此脚本链接即可，无需任何参数
  *
  * 最终节点名格式：
- *   国旗 地区名编号 倍率(如果不是1倍) | 机场名
- *   例：🇭🇰 香港01 3x | hkvps
- *   例：🇭🇰 香港01 | hkvps        （没有倍率信息或就是1倍，不显示倍率）
- *   例：🇹🇼 台湾01 | hkvps
- *   例：🇨🇳 TW01 | hkvps           （原名精确写"TW"缩写时，保留TW文字 + 🇨🇳）
+ * 国旗 地区名编号 家宽标记(如果是家宽/住宅) 倍率(如果不是1倍) | 机场名
+ * 例：🇭🇰 香港01 3x | hkvps
+ * 例：🇭🇰 香港01 | hkvps （没有倍率信息或就是1倍，不显示倍率）
+ * 例：🇺🇸 美国01 🏠家宽 | myvps （原名里带"家宽/住宅/residential"等字样）
+ * 例：🇺🇸 美国01 🏠家宽 3x | myvps
+ * 例：🇹🇼 台湾01 | hkvps
+ * 例：🇨🇳 TW01 | hkvps （原名精确写"TW"缩写时，保留TW文字 + 🇨🇳）
  *
  * 规则说明：
  * 1. 地区识别：中文名/国旗emoji/英文全称/英文缩写，四选一命中即可（已支持大小写不敏感）
@@ -18,12 +21,8 @@
  * 6. 认不出地区的节点：保持原名不动，不会被删除
  * 7. 匹配前自动清理常见协议前缀（HY2/Hysteria2/tuic/VLESS/VMess等），提高识别率
  * 8. 自动去除到期、套餐、流量、重置、官网、公告等非节点信息
- *
- * 针对截图中类似节点的处理示例：
- *   "hysteria2 sg 新加坡07 | MITCE" → 🇸🇬 新加坡01 | MITCE
- *   "SG2-HY2"                     → 🇸🇬 新加坡02 | MITCE
- *   "tuic TW01 | MITCE"           → 🇨🇳 TW01 | MITCE
- *   "TW-1"                        → 🇨🇳 TW02 | MITCE
+ * 9. 【新增】家宽/住宅识别：节点原名里只要出现 家宽/住宅/家庭宽带/residential/resi/home/isp 等字样，
+ *    就在地区编号后面加上 "🏠家宽" 标记。想增减识别的词，改下面的 RESIDENTIAL_REGEX 就行。
  */
 
 // prettier-ignore
@@ -40,6 +39,14 @@ const multiplierRegex = /((倍率|X|x|×)\D?((\d{1,3}\.)?\d+)\D?)|((\d{1,3}\.)?\
 
 // 常见协议/类型前缀，匹配前先去掉（大小写不敏感）
 const protocolClean = /\b(HY2|Hysteria2?|Hysteria|tuic|TUIC|VLESS|VMess|Trojan|SS|SSR|Shadowsocks|WireGuard|WG|AnyTLS|Reality|gRPC|WS|HTTP|HTTPS|TCP|UDP|QUIC)\b/gi;
+
+// 【新增】家宽/住宅识别：原名里出现下面任意一个词，就算家宽节点
+// 想加词：在括号里用 | 隔开再加一个就行，例如加 "原生住宅" → |原生住宅
+// 英文词前后要求不是字母，避免 "Homeland" 之类误判
+const RESIDENTIAL_REGEX = /家宽|住宅|家庭宽带|家庭|宽带|(?:^|[^a-z])(?:residential|resi|home|isp)(?:[^a-z]|$)/i;
+
+// 【新增】家宽标记文字，想换样式改这里
+const RESIDENTIAL_TAG = '🏠家宽';
 
 function operator(proxies) {
   // 建立"关键词 → 中文地区名"对照表，优先级：中文 > 国旗 > 英文全称 > 英文缩写
@@ -62,6 +69,7 @@ function operator(proxies) {
 
   proxies.forEach((proxy) => {
     const originalName = proxy.name || '';
+
     // 机场名：优先用订阅显示名称，没有就用订阅原始名称
     const subLabel = proxy._subDisplayName || proxy._subName || '';
 
@@ -69,8 +77,7 @@ function operator(proxies) {
     const cleanName = originalName.replace(protocolClean, ' ').replace(/\s+/g, ' ').trim();
     const cleanNameLower = cleanName.toLowerCase();
 
-    // 1. 台湾特例：原名含 TW / TW01 / TW-1 等缩写（且不含"台湾"/"Taiwan"/🇹🇼）→ 保留 TW 文字 + 🇹🇼
-    // 注意：\bTW\b 匹配不到 "TW01"（数字紧跟），所以用更宽松的匹配
+    // 1. 台湾特例：原名含 TW / TW01 / TW-1 等缩写（且不含"台湾"/"Taiwan"/🇹🇼）→ 保留 TW 文字 + 🇨🇳
     const isTWAbbr =
       /(?:^|[^a-z0-9])tw(?:[^a-z]|$|\d)/i.test(cleanName) &&
       !/台湾|taiwan/i.test(cleanName) &&
@@ -81,18 +88,21 @@ function operator(proxies) {
 
     if (isTWAbbr) {
       regionZh = 'TW';
-      flag = '🇨🇳';  // 纯 TW 缩写使用 🇨🇳
+      flag = '🇨🇳'; // 纯 TW 缩写使用 🇨🇳
     } else {
       // 大小写不敏感匹配
       const matchedKey = Object.keys(regionMap).find((key) =>
         cleanNameLower.includes(key.toLowerCase())
       );
+
       if (!matchedKey) {
         // 认不出地区：保持原名不动，跳过这个节点
         return;
       }
+
       regionZh = regionMap[matchedKey];
       flag = FG[ZH.indexOf(regionZh)] || '';
+
       // 台湾统一使用 🇨🇳（兼容性更好）
       if (regionZh === '台湾') {
         flag = '🇨🇳';
@@ -109,13 +119,17 @@ function operator(proxies) {
       }
     }
 
-    // 3. 按"地区+机场"分组独立编号
+    // 3. 【新增】判断是不是家宽/住宅节点（看节点原名）
+    const isResidential = RESIDENTIAL_REGEX.test(originalName);
+
+    // 4. 按"地区+机场"分组独立编号
     const groupKey = regionZh + '@' + subLabel;
     counters[groupKey] = (counters[groupKey] || 0) + 1;
     const seq = String(counters[groupKey]).padStart(2, '0');
 
-    // 4. 拼接最终名字：国旗 地区编号 倍率 | 机场名
+    // 5. 拼接最终名字：国旗 地区编号 家宽标记 倍率 | 机场名
     const parts = [flag, regionZh + seq];
+    if (isResidential) parts.push(RESIDENTIAL_TAG);
     if (multiplier) parts.push(multiplier);
     let newName = parts.filter(Boolean).join(' ');
     if (subLabel) newName += ' | ' + subLabel;
