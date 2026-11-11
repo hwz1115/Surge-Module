@@ -1,9 +1,9 @@
 #!name=Sub-Store 自动备份
-# 版本: v1.0.1（脚本地址改为 JS 文件夹）
 #!desc=每天定时把 Sub-Store 全部数据（订阅、组合、文件、设置）备份到 GitHub Gist；后端为空时自动跳过，不会覆盖好备份。需要官方 Sub-Store 模块同时开着。
 #!category=订阅管理
 #!arguments=cronexp:"30 4,16 * * *",notify_success:false,timeout:120
 #!arguments-desc=\n1️⃣ cronexp\n\n备份时间，默认每天 4:30 和 16:30 各备份一次\n\n2️⃣ notify_success\n\n备份成功后是否弹通知\n默认 false（只在失败或跳过时通知）\n填 true 可开启\n\n3️⃣ timeout\n\n脚本超时，单位为秒\n\n⚠️ 注意\n这个模块只负责定时备份，要和官方 Sub-Store 模块一起开着用。\nGist 只有内容变了才会新增记录，所以没改过订阅就看不到新记录。
+# 版本: v1.0.1（脚本地址改为 JS 文件夹）
 
 [Script]
 Sub-Store Backup=type=cron,cronexp="{{{cronexp}}}",wake-system=1,timeout={{{timeout}}},script-path=https://raw.githubusercontent.com/hwz1115/Surge-Module/refs/heads/main/JS/sub-store-backup.js,argument="notify_success={{{notify_success}}}"
