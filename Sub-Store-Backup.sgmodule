@@ -1,5 +1,5 @@
+# 版本: v1.0.1（脚本地址改为 JS 文件夹）
 #!name=Sub-Store 自动备份
-#!版本: v1.0.0
 #!desc=每天定时把 Sub-Store 全部数据（订阅、组合、文件、设置）备份到 GitHub Gist；后端为空时自动跳过，不会覆盖好备份。需要官方 Sub-Store 模块同时开着。
 #!category=订阅管理
 #!arguments=cronexp:"30 4,16 * * *",notify_success:false,timeout:120
