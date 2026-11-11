@@ -1,4 +1,5 @@
-// 版本: v1.0.2
+// 版本: v1.0.3
+// 更新：v1.0.3 增加本地地址尝试 + 强制走重写，解决 cron 脚本连不上后端的问题
 // 更新：v1.0.2 先用 http 地址连后端（脚本发出的 https 请求不会被模块接管），不行再试 https
 // 更新：v1.0.1 失败时显示更多细节
 // Sub-Store 自动备份脚本（Surge 定时脚本）
@@ -29,7 +30,7 @@ function request(method, path, body) {
       timeout: 60,
       headers: {
         "Content-Type": "application/json",
-        "X-Surge-Skip-Scripting": "false",
+        "X-Surge-Skip-Scripting": "true", // 强制走重写
       },
     };
     if (body) opt.body = JSON.stringify(body);
@@ -62,17 +63,35 @@ function count(x) {
 
 (async () => {
   try {
-    // 第 1 步：确认后端在线（先试 http，不行再试 https）
-    let env = await request("get", "/api/utils/env");
-    let tried = "http→" + env.status;
-    if (env.status !== 200 || !/success/.test(env.body)) {
-      BASE = "https://sub.store";
-      env = await request("get", "/api/utils/env");
-      tried += "，https→" + env.status;
+    // 第 1 步：尝试多个可能的后端地址
+    const candidates = [
+      "http://sub.store",
+      "https://sub.store",
+      "http://127.0.0.1:3000",
+      "http://127.0.0.1:3001",
+    ];
+
+    let env = null;
+    let tried = [];
+    let success = false;
+
+    for (const base of candidates) {
+      BASE = base;
+      try {
+        env = await request("get", "/api/utils/env");
+        tried.push(base.replace("http://", "").replace("https://", "") + "→" + env.status);
+        if (env.status === 200 && /success/.test(env.body)) {
+          success = true;
+          break;
+        }
+      } catch (e) {
+        tried.push(base.replace("http://", "").replace("https://", "") + "→error");
+      }
     }
-    if (env.status !== 200 || !/success/.test(env.body)) {
+
+    if (!success) {
       notify(
-        "连不上 Sub-Store 后端（" + tried + "）。请确认 Surge 开着，并且官方 Sub-Store 模块已打开。返回内容：" + cut(env.body)
+        "连不上 Sub-Store 后端（" + tried.join("，") + "）。请确认 Surge 开着，并且官方 Sub-Store 模块已打开。"
       );
       return;
     }
@@ -91,12 +110,14 @@ function count(x) {
       notify("看不懂后端数据的格式，已跳过备份。内容开头：" + cut(Object.keys(d).join(",")));
       return;
     }
+
     const n = {
       subs: count(d.subs),
       collections: count(d.collections),
       files: count(d.files),
       artifacts: count(d.artifacts),
     };
+
     if (n.subs + n.collections + n.files + n.artifacts === 0) {
       notify("后端是空的，已跳过备份，避免覆盖 Gist 里的好备份。请先在 Sub-Store「我的」里点「下载」还原数据。");
       return;
@@ -107,6 +128,7 @@ function count(x) {
     if (r.status === 404 || r.status === 405) {
       r = await request("post", "/api/utils/backup", { action: "upload" });
     }
+
     const j = tryJSON(r.body);
     const ok =
       r.status >= 200 &&
