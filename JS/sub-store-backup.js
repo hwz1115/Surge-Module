@@ -1,4 +1,5 @@
-// 版本: v1.0.0
+// 版本: v1.0.1
+// 更新：v1.0.1 让脚本发出的请求也能被 Sub-Store 模块接管（修复"连不上后端"）；失败时显示更多细节
 // Sub-Store 自动备份脚本（Surge 定时脚本）
 // 作用：定时把 Sub-Store 的全部数据（订阅、组合、文件、设置）备份到 GitHub Gist。
 // 安全：如果后端是空的（比如刚重装 Surge），自动跳过，不会把 Gist 里的好备份覆盖掉。
@@ -25,7 +26,10 @@ function request(method, path, body) {
     const opt = {
       url: BASE + path,
       timeout: 60,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Surge-Skip-Scripting": "false",
+      },
     };
     if (body) opt.body = JSON.stringify(body);
     $httpClient[method](opt, (err, resp, data) => {
@@ -60,7 +64,9 @@ function count(x) {
     // 第 1 步：确认后端在线
     const env = await request("get", "/api/utils/env");
     if (env.status !== 200 || !/success/.test(env.body)) {
-      notify("连不上 Sub-Store 后端。请确认 Surge 开着，并且官方 Sub-Store 模块已打开。");
+      notify(
+        "连不上 Sub-Store 后端（HTTP " + env.status + "）。请确认 Surge 开着，并且官方 Sub-Store 模块已打开。返回内容：" + cut(env.body)
+      );
       return;
     }
 
