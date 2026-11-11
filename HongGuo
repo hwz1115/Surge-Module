@@ -1,12 +1,12 @@
 #!name = 红果短剧・红果漫剧去广告
-#!desc = 拦截穿山甲广告、播放前贴片、开屏、埋点上报与部分电商推广；保留正片、漫画图片、登录与评论。改写自 bluee1111/egern-hongguo-adblock 与 k6nfmm7dbr-commits/hongguo-lite，纯域名规则，无需 MITM。
+#!desc = 拦截穿山甲广告、播放前贴片、开屏、埋点上报与部分电商推广；保留正片、漫画图片、登录与评论。改写自 bluee1111/egern-hongguo-adblock 与 k6nfmm7dbr-commits/hongguo-lite，纯域名规则，无需 MITM。补充精确域名来自 home-dns-adblock（2026-10）。
 #!author = Laincat（Surge 整理）
 #!homepage = https://github.com/laincat/Rules
 #!category = Laincat
-
 # 域名来源：https://github.com/bluee1111/egern-hongguo-adblock/blob/main/hongguo-adblock.yaml（MIT）
 # 埋点与广告 API 条目来源：https://github.com/k6nfmm7dbr-commits/hongguo-lite（MIT）
-# 核对日期：2026-10-16。上游为 Egern 格式，此处改写为 Surge [Rule] 语法，域名集保持一致。
+# 补充精确域名：https://github.com/abclq/home-dns-adblock
+# 核对日期：2026-10-16 + 2026-11 补充
 #
 # 保留上游的必要例外，必须写在本模块的 REJECT 之前：
 #   正片 v*-reading-video*.qznovelvod.com / v*-reading-videocdn*.qznovelvod.com
@@ -55,10 +55,18 @@ DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com,REJECT
 DOMAIN-SUFFIX,pangle.io,REJECT
 DOMAIN-WILDCARD,api-access.pangolin-sdk-toutiao*.com,REJECT
 DOMAIN-WILDCARD,log-api.pangolin-sdk-toutiao*.com,REJECT
+# 补充精确广告子域（home-dns-adblock）
+DOMAIN,api-access.pangolin-sdk-toutiao.com,REJECT
+DOMAIN,api-access.pangolin-sdk-toutiao1.com,REJECT
+DOMAIN,p3-ad-sign.byteimg.com,REJECT
+DOMAIN,p6-ad-sign.byteimg.com,REJECT
+DOMAIN,p9-ad-sign.byteimg.com,REJECT
 
 # ── 埋点 / 上报（不影响播放，介意可注释掉）──────────────────────────────────
 DOMAIN,mon.toutiaocloud.net,REJECT
 DOMAIN,mon.toutiaocloud.com,REJECT
+# 注意：i.snssdk.com / i-lq.snssdk.com / is.snssdk.com 社区后期已解除拦截（可能影响配置/风控），
+# 如出现加载异常请优先注释这几条。
 DOMAIN,i.snssdk.com,REJECT
 DOMAIN,i-lq.snssdk.com,REJECT
 DOMAIN,is.snssdk.com,REJECT
@@ -74,6 +82,15 @@ DOMAIN-WILDCARD,ads*-normal-*.zijieapi.com,REJECT
 DOMAIN-WILDCARD,ads*-normal-lq.zijieapi.com,REJECT
 DOMAIN-WILDCARD,p*-ad-sign.byteimg.com,REJECT
 DOMAIN-WILDCARD,p*-developer-sign.bytemaimg.com,REJECT
+# 补充精确广告接口
+DOMAIN,ads3-normal-hl.zijieapi.com,REJECT
+DOMAIN,ads3-normal-lf.zijieapi.com,REJECT
+DOMAIN,ads3-normal-lq.zijieapi.com,REJECT
+DOMAIN,ads5-normal-hl.zijieapi.com,REJECT
+DOMAIN,ads5-normal-lf.zijieapi.com,REJECT
+DOMAIN,ads5-normal-lq.zijieapi.com,REJECT
+DOMAIN,dig.bdurl.net,REJECT
+DOMAIN,ad.toutiao.com,REJECT
 # 电商推广：三个前缀与 -lq 后缀均需匹配。
 DOMAIN-WILDCARD,ecom*-normal-lq.ecombdapi.com,REJECT
 DOMAIN-WILDCARD,ec*-core-lq.ecombdapi.com,REJECT
@@ -84,7 +101,16 @@ DOMAIN-WILDCARD,v*-reading-ad.qznovelvod.com,REJECT
 DOMAIN-WILDCARD,v*-bd-daily-reading-ad.qznovelvod.com,REJECT
 DOMAIN-WILDCARD,v*-se-daily-reading-ad.qznovelvod.com,REJECT
 DOMAIN-WILDCARD,v*-se-sjy-daily-reading-ad.qznovelvod.com,REJECT
-
+# 补充精确贴片域名
+DOMAIN,v5-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v6-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v9-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v11-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v13-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v26-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v96-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v5-bd-daily-reading-ad.qznovelvod.com,REJECT
+DOMAIN,v5-se-sjy-daily-reading-ad.qznovelvod.com,REJECT
 # 其余正片 / 听书 CDN 兜底：必须放在 reading-ad 拦截之后，否则广告规则被遮蔽。
 DOMAIN-SUFFIX,qznovelvod.com,DIRECT
 
@@ -95,4 +121,11 @@ DOMAIN,zlink.ugsdk.cn,REJECT
 DOMAIN-WILDCARD,minigame*-normal.zijieapi.com,REJECT
 DOMAIN-WILDCARD,minigame*-normal-*.zijieapi.com,REJECT
 DOMAIN-SUFFIX,chengzijianzhan.com,REJECT
-
+# 补充小游戏精确域名
+DOMAIN,minigame3-normal-hl.zijieapi.com,REJECT
+DOMAIN,minigame3-normal-lf.zijieapi.com,REJECT
+DOMAIN,minigame3-normal-lq.zijieapi.com,REJECT
+DOMAIN,minigame5-normal-hl.zijieapi.com,REJECT
+DOMAIN,minigame5-normal-lf.zijieapi.com,REJECT
+DOMAIN,minigame5-normal-lq.zijieapi.com,REJECT
+DOMAIN,activity-ag.awemeughun.com,REJECT
