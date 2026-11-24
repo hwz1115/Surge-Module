@@ -1,7 +1,11 @@
 #!name= 📰 今日热榜VIP解锁
+# 版本：v1.0.1
 #!author= XiaoMao
 #!update= 2024-05-28
 #!desc= 解锁今日热榜VIP、广告移除、订阅摘要展示等
+
+[URL Rewrite]
+^https:\/\/api2\.tophub\.app\/remai\/recommend\/taobao$ - reject
 
 [Script]
 今日热榜-账户同步 = type=http-response, pattern=^https:\/\/api2\.tophub\.app\/account\/sync$, script-path=https://raw.githubusercontent.com/xiaomaoJT/QxScript/main/rewrite/boxJS/source/th.js, requires-body=true
@@ -13,8 +17,6 @@
 今日热榜-频道内容 = type=http-response, pattern=^https:\/\/api2\.tophub\.app\/my\/channels\/.+\/items$, script-path=https://raw.githubusercontent.com/xiaomaoJT/QxScript/main/rewrite/boxJS/source/th.js, requires-body=true
 
 今日热榜-探索 = type=http-response, pattern=^https:\/\/api2\.tophub\.app\/explore$, script-path=https://raw.githubusercontent.com/xiaomaoJT/QxScript/main/rewrite/boxJS/source/th.js, requires-body=true
-
-今日热榜-移除广告 = type=http-request, pattern=^https:\/\/api2\.tophub\.app\/remai\/recommend\/taobao$, reject
 
 [MITM]
 hostname = %APPEND% api2.tophub.app
