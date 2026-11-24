@@ -1,8 +1,8 @@
 #!name= 📰 今日热榜VIP解锁
-# 版本：v1.0.1
 #!author= XiaoMao
 #!update= 2024-05-28
 #!desc= 解锁今日热榜VIP、广告移除、订阅摘要展示等
+# 版本：v1.0.1
 
 [URL Rewrite]
 ^https:\/\/api2\.tophub\.app\/remai\/recommend\/taobao$ - reject
